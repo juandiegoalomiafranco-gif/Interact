@@ -18,26 +18,26 @@ export default async function DashboardLayout({
   return (
     <div className="min-h-dvh md:flex">
       {/* Barra lateral — escritorio */}
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-borde bg-superficie md:flex">
-        <div className="border-b border-borde px-5 py-5">
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-acento uppercase">
+      <aside className="hidden w-64 shrink-0 flex-col bg-barra md:flex">
+        <div className="px-5 py-6">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-barra-acento uppercase">
             Club Interact
           </p>
-          <p className="mt-0.5 text-sm font-semibold text-texto">Finanzas</p>
+          <p className="mt-0.5 text-base font-semibold text-barra-texto">Finanzas</p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-3">
           <NavLateral />
         </div>
 
-        <div className="border-t border-borde p-3">
+        <div className="p-3">
           {correo && (
-            <p className="mb-2 truncate px-3 text-xs text-texto-tenue" title={correo}>
+            <p className="mb-2 truncate px-3 text-xs text-barra-texto-tenue" title={correo}>
               {correo}
             </p>
           )}
           <div className="flex items-center gap-2">
-            <InterruptorDeTema />
+            <InterruptorDeTema enBarra />
             <form
               className="flex-1"
               action={async () => {
@@ -47,7 +47,7 @@ export default async function DashboardLayout({
             >
               <button
                 type="submit"
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-borde px-3 py-2 text-sm font-medium text-texto-suave transition-colors duration-200 hover:bg-superficie-2 hover:text-texto focus-visible:ring-2 focus-visible:ring-anillo focus-visible:ring-offset-2 focus-visible:ring-offset-superficie focus-visible:outline-none"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[--radius-interno] border border-barra-activo px-3 py-2 text-sm font-medium text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
               >
                 <IconoSalir className="size-4 shrink-0" />
                 Salir
@@ -58,15 +58,15 @@ export default async function DashboardLayout({
       </aside>
 
       {/* Encabezado — móvil */}
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-borde bg-superficie px-4 py-3 md:hidden">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-barra px-4 py-3 md:hidden">
         <div>
-          <p className="text-[10px] font-semibold tracking-[0.14em] text-acento uppercase">
+          <p className="text-[10px] font-semibold tracking-[0.14em] text-barra-acento uppercase">
             Club Interact
           </p>
-          <p className="text-sm font-semibold text-texto">Finanzas</p>
+          <p className="text-sm font-semibold text-barra-texto">Finanzas</p>
         </div>
         <div className="flex items-center gap-2">
-          <InterruptorDeTema />
+          <InterruptorDeTema enBarra />
           <form
             action={async () => {
               'use server';
@@ -76,7 +76,7 @@ export default async function DashboardLayout({
             <button
               type="submit"
               aria-label="Cerrar sesión"
-              className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-borde p-2 text-texto-suave transition-colors duration-200 hover:bg-superficie-2 hover:text-texto focus-visible:ring-2 focus-visible:ring-anillo focus-visible:outline-none"
+              className="inline-flex cursor-pointer items-center justify-center rounded-[--radius-interno] border border-barra-activo p-2 text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
             >
               <IconoSalir />
             </button>

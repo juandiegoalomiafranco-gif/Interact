@@ -61,6 +61,18 @@ const PARES = [
   ['borde-control', 'fondo', 3.0, 'borde de control sobre el fondo'],
   ['anillo', 'fondo', 3.0, 'anillo de foco'],
 
+  // La barra lateral es oscura en ambos temas: su texto no puede heredar
+  // los tokens de superficie.
+  ['barra-texto', 'barra', 4.5, 'texto de la barra lateral'],
+  ['barra-texto-tenue', 'barra', 4.5, 'texto secundario de la barra'],
+  ['barra-acento', 'barra', 4.5, 'elemento activo del menú'],
+
+  // Tarjetas de indicador: cada métrica lleva su tinte y su texto.
+  ['tinte-saldo-texto', 'tinte-saldo', 4.5, 'tarjeta de saldo'],
+  ['tinte-ingresos-texto', 'tinte-ingresos', 4.5, 'tarjeta de ingresos'],
+  ['tinte-egresos-texto', 'tinte-egresos', 4.5, 'tarjeta de egresos'],
+  ['tinte-cuotas-texto', 'tinte-cuotas', 4.5, 'tarjeta de cuotas'],
+
   ['ok-texto', 'ok-fondo', 4.5, 'estado correcto'],
   ['alerta-texto', 'alerta-fondo', 4.5, 'estado de alerta'],
   ['riesgo-texto', 'riesgo-fondo', 4.5, 'estado de riesgo'],

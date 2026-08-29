@@ -44,10 +44,10 @@ export function NavLateral() {
             key={href}
             href={href}
             aria-current={activa ? 'page' : undefined}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-anillo focus-visible:outline-none ${
+            className={`flex items-center gap-3 rounded-[--radius-interno] px-3 py-2.5 text-sm font-medium transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none ${
               activa
-                ? 'bg-acento-suave text-acento'
-                : 'text-texto-suave hover:bg-superficie-2 hover:text-texto'
+                ? 'bg-barra-activo text-barra-acento'
+                : 'text-barra-texto-tenue hover:bg-barra-activo hover:text-barra-texto'
             }`}
           >
             <Icono />

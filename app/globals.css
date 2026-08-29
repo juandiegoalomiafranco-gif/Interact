@@ -45,6 +45,10 @@
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
+  /* Radios generosos: es lo que más define el carácter de la referencia. */
+  --radius-tarjeta: 1.25rem;
+  --radius-interno: 0.875rem;
+
   /* ═══════════════════════════════════════════════════════════════
      CAPA 2 — SEMÁNTICAS (valores del tema claro)
      Lo ÚNICO que los componentes tienen permitido usar. Un componente
@@ -52,30 +56,54 @@
      roto en oscuro. Se revisa con npm run verify:tokens.
      ═══════════════════════════════════════════════════════════════ */
 
-  /* Superficies */
-  --color-fondo: #f6f8fa;
+  /* Superficies. El lienzo es crema, no gris: en la referencia el fondo
+     cálido es lo que hace que las tarjetas blancas se sientan livianas en
+     vez de planas. */
+  --color-fondo: #ece8de;
   --color-superficie: #ffffff;
-  --color-superficie-2: #eceff3;
-  --color-superficie-3: #dbe1e8;
+  --color-superficie-2: #f6f3ec;
+  --color-superficie-3: #e6e1d5;
+
+  /* La barra lateral es oscura sobre el lienzo claro, como en la
+     referencia: ancla la composición y despeja el área de contenido. */
+  --color-barra: #23211d;
+  --color-barra-texto: #f3f1ec;
+  --color-barra-texto-tenue: #a7a299;
+  --color-barra-activo: #34312b;
+  /* Sobre la barra oscura el azul de marca solo llega a 2:1. El dorado
+     Rotary sí contrasta, y además es el color que la referencia usa para
+     el elemento activo del menú. */
+  --color-barra-acento: #f7a81b;
 
   /* Bordes. `borde` y `borde-fuerte` son decorativos: separan visualmente
      y no necesitan 3:1. `borde-control` delimita campos y botones, donde
      el borde ES la única señal de dónde empieza el control, y ahí WCAG
      1.4.11 sí exige 3:1. */
-  --color-borde: #dbe1e8;
-  --color-borde-fuerte: #bcc6d2;
-  --color-borde-control: #6f8095;
+  --color-borde: #e2ddd1;
+  --color-borde-fuerte: #cdc6b6;
+  --color-borde-control: #7c7466;
 
   /* Texto */
-  --color-texto: #1a212c;
-  --color-texto-suave: #4b596d;
-  --color-texto-tenue: #64748b;
+  --color-texto: #23211d;
+  --color-texto-suave: #55504a;
+  --color-texto-tenue: #6b655d;
   --color-texto-invertido: #ffffff;
+
+  /* Tintes de las tarjetas de indicador. Cada métrica tiene el suyo, como
+     en la referencia: el color identifica la tarjeta antes de leerla. */
+  --color-tinte-saldo: #dbe6d3;
+  --color-tinte-saldo-texto: #33502a;
+  --color-tinte-ingresos: #dcdcf5;
+  --color-tinte-ingresos-texto: #34347a;
+  --color-tinte-egresos: #f7e6bd;
+  --color-tinte-egresos-texto: #6b4a06;
+  --color-tinte-cuotas: #f3ddd6;
+  --color-tinte-cuotas-texto: #7a3a26;
 
   /* Acento de marca */
   --color-acento: #00529b;
   --color-acento-hover: #01427c;
-  --color-acento-suave: #eaf3fb;
+  --color-acento-suave: #e3ecf6;
   --color-acento-borde: #9fc6eb;
 
   /* Estados: cada uno con fondo, borde y texto propios */
@@ -132,24 +160,40 @@
    ═══════════════════════════════════════════════════════════════════ */
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema='claro']) {
-    --color-fondo: #0e131a;
-    --color-superficie: #1a212c;
-    --color-superficie-2: #2c3644;
-    --color-superficie-3: #435063;
+    --color-fondo: #16140f;
+    --color-superficie: #211e18;
+    --color-superficie-2: #2c2820;
+    --color-superficie-3: #3a352b;
 
-    --color-borde: #2c3644;
-    --color-borde-fuerte: #435063;
-    --color-borde-control: #94a2b3;
+    --color-barra: #262219;
+    --color-barra-texto: #f3f1ec;
+    --color-barra-texto-tenue: #a7a299;
+    --color-barra-activo: #383223;
+  --color-barra-acento: #f9bd4f;
+    --color-barra-acento: #f9bd4f;
 
-    --color-texto: #eceff3;
-    --color-texto-suave: #bcc6d2;
-    --color-texto-tenue: #94a2b3;
-    --color-texto-invertido: #0e131a;
+    --color-borde: #322d24;
+    --color-borde-fuerte: #4a4437;
+    --color-borde-control: #918a7a;
+
+    --color-texto: #f3f1ec;
+    --color-texto-suave: #c9c3b8;
+    --color-texto-tenue: #a8a194;
+    --color-texto-invertido: #16140f;
 
     --color-acento: #6aa5de;
     --color-acento-hover: #9fc6eb;
-    --color-acento-suave: #04335e;
+    --color-acento-suave: #10304e;
     --color-acento-borde: #1665b5;
+
+    --color-tinte-saldo: #1f2e19;
+    --color-tinte-saldo-texto: #a5d493;
+    --color-tinte-ingresos: #1e1e46;
+    --color-tinte-ingresos-texto: #b3b3ef;
+    --color-tinte-egresos: #382b09;
+    --color-tinte-egresos-texto: #f0cd74;
+    --color-tinte-cuotas: #381e15;
+    --color-tinte-cuotas-texto: #efab93;
 
     --color-ok-fondo: #0b2f22;
     --color-ok-borde: #157a56;
@@ -169,8 +213,8 @@
     --color-parcial-texto: #fbcf6b;
     --color-pendiente-fondo: #3a1613;
     --color-pendiente-texto: #f8a9a2;
-    --color-exonerado-fondo: #2c3644;
-    --color-exonerado-texto: #bcc6d2;
+    --color-exonerado-fondo: #2c2820;
+    --color-exonerado-texto: #c9c3b8;
 
     --color-serie-ingreso: #4ecb9a;
     --color-serie-egreso: #f08b83;
@@ -180,7 +224,7 @@
     --color-cat-3: #4ecb9a;
     --color-cat-4: #c39ae4;
     --color-cat-5: #f08b83;
-    --color-cat-6: #bcc6d2;
+    --color-cat-6: #c9c3b8;
     --color-cat-7: #5fc9d6;
     --color-cat-8: #9fc6eb;
 
@@ -189,24 +233,39 @@
 }
 
 :root[data-tema='oscuro'] {
-  --color-fondo: #0e131a;
-  --color-superficie: #1a212c;
-  --color-superficie-2: #2c3644;
-  --color-superficie-3: #435063;
+  --color-fondo: #16140f;
+  --color-superficie: #211e18;
+  --color-superficie-2: #2c2820;
+  --color-superficie-3: #3a352b;
 
-  --color-borde: #2c3644;
-  --color-borde-fuerte: #435063;
-  --color-borde-control: #94a2b3;
+  --color-barra: #262219;
+  --color-barra-texto: #f3f1ec;
+  --color-barra-texto-tenue: #a7a299;
+  --color-barra-activo: #383223;
+  --color-barra-acento: #f9bd4f;
 
-  --color-texto: #eceff3;
-  --color-texto-suave: #bcc6d2;
-  --color-texto-tenue: #94a2b3;
-  --color-texto-invertido: #0e131a;
+  --color-borde: #322d24;
+  --color-borde-fuerte: #4a4437;
+  --color-borde-control: #918a7a;
+
+  --color-texto: #f3f1ec;
+  --color-texto-suave: #c9c3b8;
+  --color-texto-tenue: #a8a194;
+  --color-texto-invertido: #16140f;
 
   --color-acento: #6aa5de;
   --color-acento-hover: #9fc6eb;
-  --color-acento-suave: #04335e;
+  --color-acento-suave: #10304e;
   --color-acento-borde: #1665b5;
+
+  --color-tinte-saldo: #1f2e19;
+  --color-tinte-saldo-texto: #a5d493;
+  --color-tinte-ingresos: #1e1e46;
+  --color-tinte-ingresos-texto: #b3b3ef;
+  --color-tinte-egresos: #382b09;
+  --color-tinte-egresos-texto: #f0cd74;
+  --color-tinte-cuotas: #381e15;
+  --color-tinte-cuotas-texto: #efab93;
 
   --color-ok-fondo: #0b2f22;
   --color-ok-borde: #157a56;
@@ -226,8 +285,8 @@
   --color-parcial-texto: #fbcf6b;
   --color-pendiente-fondo: #3a1613;
   --color-pendiente-texto: #f8a9a2;
-  --color-exonerado-fondo: #2c3644;
-  --color-exonerado-texto: #bcc6d2;
+  --color-exonerado-fondo: #2c2820;
+  --color-exonerado-texto: #c9c3b8;
 
   --color-serie-ingreso: #4ecb9a;
   --color-serie-egreso: #f08b83;
@@ -237,7 +296,7 @@
   --color-cat-3: #4ecb9a;
   --color-cat-4: #c39ae4;
   --color-cat-5: #f08b83;
-  --color-cat-6: #bcc6d2;
+  --color-cat-6: #c9c3b8;
   --color-cat-7: #5fc9d6;
   --color-cat-8: #9fc6eb;
 

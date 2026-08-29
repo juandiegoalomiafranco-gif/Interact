@@ -52,7 +52,14 @@ const ICONOS: Record<Tema, typeof IconoSol> = {
   oscuro: IconoLuna,
 };
 
-export function InterruptorDeTema({ className = '' }: { className?: string }) {
+export function InterruptorDeTema({
+  className = '',
+  enBarra = false,
+}: {
+  className?: string;
+  /** La barra lateral es oscura en ambos temas y necesita sus propios tokens. */
+  enBarra?: boolean;
+}) {
   // Arranca en 'sistema' para que servidor y cliente rendericen lo mismo;
   // el valor real se lee tras montar. Sin esto, React se queja de que el
   // HTML del servidor no coincide con el del navegador.
@@ -78,7 +85,11 @@ export function InterruptorDeTema({ className = '' }: { className?: string }) {
       suppressHydrationWarning
       aria-label={`${ETIQUETAS[tema]}. Cambiar a ${ETIQUETAS[siguiente].toLowerCase()}`}
       title={ETIQUETAS[tema]}
-      className={`inline-flex cursor-pointer items-center justify-center rounded-lg border border-borde p-2 text-texto-suave transition-colors duration-200 hover:bg-superficie-2 hover:text-texto focus-visible:ring-2 focus-visible:ring-anillo focus-visible:ring-offset-2 focus-visible:ring-offset-superficie focus-visible:outline-none ${className}`}
+      className={`inline-flex cursor-pointer items-center justify-center rounded-[--radius-interno] p-2 transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none ${
+        enBarra
+          ? 'border border-barra-activo text-barra-texto-tenue hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-barra-acento'
+          : 'border border-borde text-texto-suave hover:bg-superficie-2 hover:text-texto focus-visible:ring-anillo focus-visible:ring-offset-2 focus-visible:ring-offset-superficie'
+      } ${className}`}
     >
       <Icono className={montado ? 'size-5 shrink-0' : 'size-5 shrink-0 opacity-0'} />
     </button>
