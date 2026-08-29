@@ -1,0 +1,167 @@
+{
+  "tables": [
+    {
+      "id": "tbl1spwjqXSSPTNEa",
+      "name": "MIEMBROS",
+      "primaryFieldId": "flduhC381NduE5fwm",
+      "description": "Gestiona la información clave de los miembros del club Interact.",
+      "fields": [
+        { "id": "flduhC381NduE5fwm", "name": "Nombre", "type": "singleLineText" },
+        { "id": "fldwcyiVhdhNgHwNN", "name": "Rol", "type": "singleSelect", "options": { "choices": [
+          { "id": "selCLiUFUKN3fNblO", "name": "Presidente", "color": "blueLight2" },
+          { "id": "selyoFADbAqkrwLkj", "name": "Vicepresidente", "color": "cyanLight2" },
+          { "id": "selqzSUO4nmyzYZLz", "name": "Secretario", "color": "tealLight2" },
+          { "id": "selz0FKbp0ryp7mC0", "name": "Tesorero", "color": "greenLight2" },
+          { "id": "selaEFIYV6xS7GUVC", "name": "Comité de finanzas", "color": "yellowLight2" },
+          { "id": "selw5AoOeHDqkJKDg", "name": "Director de proyectos", "color": "orangeLight2" },
+          { "id": "selMUBnu5UHNHLPOg", "name": "Miembro", "color": "redLight2" },
+          { "id": "selfW9DRjJSO6B2DS", "name": "Estudiante", "color": "blueLight2" },
+          { "id": "selZRTvIrKeYatHxr", "name": "Monitor", "color": "cyanLight2" }
+        ] } },
+        { "id": "fldRbGKjCHcuk3UhK", "name": "Estado", "type": "singleSelect", "options": { "choices": [
+          { "id": "selAT9gePkSuxYITm", "name": "Activo", "color": "blueLight2" },
+          { "id": "selnhu8s9xJFkrjIg", "name": "Inactivo", "color": "cyanLight2" },
+          { "id": "selhXMfrbpXINjTZY", "name": "Retirado", "color": "tealLight2" }
+        ] } },
+        { "id": "fld6geGXyVE0TAksS", "name": "Correo", "type": "email" },
+        { "id": "fldwkPcws6ATomhcw", "name": "Teléfono", "type": "phoneNumber" },
+        { "id": "fld7i08PNzuucvlKd", "name": "Fecha de ingreso", "type": "date" },
+        { "id": "fld6RTnJPMzK37Zv8", "name": "Institución", "type": "singleLineText" },
+        { "id": "fld1l2X9fqO3T79Dp", "name": "Acudiente", "type": "singleLineText" },
+        { "id": "fldLzUVE69YG85hfm", "name": "Teléfono acudiente", "type": "phoneNumber" },
+        { "id": "fldjwlQM2Z33jxfzV", "name": "Notas", "type": "multilineText" },
+        { "id": "fldAC3qRSs6t55KEB", "name": "CUOTAS", "type": "multipleRecordLinks", "options": { "linkedTableId": "tblzERwh1hlyzKCaG", "isReversed": false, "prefersSingleRecordLink": false, "inverseLinkFieldId": "fldjV6NBBBuaDPAMy" } },
+        { "id": "fldhv3E277xGamzCZ", "name": "PROYECTOS", "type": "multipleRecordLinks", "options": { "linkedTableId": "tblTX2KO85hNG3Vuj", "isReversed": false, "prefersSingleRecordLink": false, "inverseLinkFieldId": "fldl2aDH2FCJTZq1b" } },
+        { "id": "fldTdezgtuMttUpjk", "name": "EVENTOS", "type": "multipleRecordLinks", "options": { "linkedTableId": "tblmWZ9I5xhB6rJTL", "isReversed": false, "prefersSingleRecordLink": false, "inverseLinkFieldId": "fldQcI2LhBEobFR9M" } }
+      ]
+    },
+    {
+      "id": "tblclKtUXOqnzONv7",
+      "name": "PERIODOS",
+      "primaryFieldId": "fldxDFB3WTyOfZjq7",
+      "description": "Define y administra los diferentes periodos y ciclos del club.",
+      "fields": [
+        { "id": "fldxDFB3WTyOfZjq7", "name": "Periodo", "type": "singleLineText" },
+        { "id": "fld2Zwf5GX9S8dufW", "name": "Fecha inicio", "type": "date" },
+        { "id": "fldLFqzcPrOdcIvW9", "name": "Fecha límite de pago", "type": "date" },
+        { "id": "fldnkD76WcjuKPO0n", "name": "Año rotario", "type": "singleSelect", "options": { "choices": [
+          { "id": "selu0tqn5UYXYsA4p", "name": "2026-2027", "color": "blueLight2" },
+          { "id": "selBI0PDlItz96URc", "name": "2027-2028", "color": "cyanLight2" },
+          { "id": "seleCdWeWRWLmdVqR", "name": "2022-2023 Rotario", "color": "blueLight2" },
+          { "id": "selueOvEp3jUKnFaa", "name": "2023-2024 Rotario", "color": "cyanLight2" }
+        ] } },
+        { "id": "fldJrU0BiqDMC6d4E", "name": "Cerrado", "type": "checkbox" },
+        { "id": "fldGBSGYEoAvJ2a1r", "name": "CUOTAS", "type": "multipleRecordLinks", "options": { "linkedTableId": "tblzERwh1hlyzKCaG", "isReversed": false, "prefersSingleRecordLink": false, "inverseLinkFieldId": "fldtrHRDgTWfhN8Gj" } }
+      ]
+    },
+    {
+      "id": "tblzERwh1hlyzKCaG",
+      "name": "CUOTAS",
+      "primaryFieldId": "fld3nPJvDiirNbBCO",
+      "description": "Registra y da seguimiento al pago de cuotas por miembro y periodo.",
+      "fields": [
+        { "id": "fld3nPJvDiirNbBCO", "name": "Referencia", "type": "singleLineText" },
+        { "id": "fldjV6NBBBuaDPAMy", "name": "Miembro", "type": "multipleRecordLinks", "options": { "linkedTableId": "tbl1spwjqXSSPTNEa", "isReversed": false, "prefersSingleRecordLink": true, "inverseLinkFieldId": "fldAC3qRSs6t55KEB" } },
+        { "id": "fldtrHRDgTWfhN8Gj", "name": "Periodo", "type": "multipleRecordLinks", "options": { "linkedTableId": "tblclKtUXOqnzONv7", "isReversed": false, "prefersSingleRecordLink": true, "inverseLinkFieldId": "fldGBSGYEoAvJ2a1r" } },
+        { "id": "fldH170FvkP389fMy", "name": "Monto esperado", "type": "currency" },
+        { "id": "fldYDrvaT4ZHSy2OD", "name": "Monto pagado", "type": "currency" },
+        { "id": "fldVxD94geW6A82Y2", "name": "Estado", "type": "singleSelect", "options": { "choices": [
+          { "id": "seljRQJ8ENkZtciDD", "name": "Pendiente", "color": "blueLight2" },
+          { "id": "seliD8tVuoWXM59w5", "name": "Pagado", "color": "cyanLight2" },
+          { "id": "selGV4ku8z2068sFp", "name": "Parcial", "color": "tealLight2" },
+          { "id": "selcrdiST7ldl6h7I", "name": "Exonerado", "color": "greenLight2" }
+        ] } },
+        { "id": "fldQDdWlcjct5Zjqs", "name": "Fecha de pago", "type": "date" },
+        { "id": "fldkIuyqDgI8cuAEN", "name": "Método", "type": "singleSelect", "options": { "choices": [
+          { "id": "sel03SYR22Gef4pfc", "name": "Efectivo", "color": "blueLight2" },
+          { "id": "seluoSHl2kxxSNXp9", "name": "Nequi", "color": "cyanLight2" },
+          { "id": "seloby5H0VbfWKP1A", "name": "Daviplata", "color": "tealLight2" },
+          { "id": "selO4ZK5F4QIyayl5", "name": "Transferencia bancaria", "color": "greenLight2" },
+          { "id": "sel4aZX69jr2oaVhE", "name": "Transferencia", "color": "blueLight2" },
+          { "id": "sel5A8j6mjCXmI6Mv", "name": "Tarjeta", "color": "cyanLight2" }
+        ] } },
+        { "id": "fldJMpVJGaqeGHi0o", "name": "Soporte", "type": "multipleAttachments" },
+        { "id": "fldoeZCdbWzgkvfMC", "name": "Observación", "type": "multilineText" }
+      ]
+    },
+    {
+      "id": "tblTX2KO85hNG3Vuj",
+      "name": "PROYECTOS",
+      "primaryFieldId": "fldNOAzRSvZsAeCLz",
+      "description": "Organiza y registra los proyectos realizados por el club.",
+      "fields": [
+        { "id": "fldNOAzRSvZsAeCLz", "name": "Proyecto", "type": "singleLineText" },
+        { "id": "fldNmUUDOR5yHM4iA", "name": "Tipo", "type": "singleSelect", "options": { "choices": [
+          { "id": "selMqUbkWijLa5XQJ", "name": "Servicio comunitario", "color": "blueLight2" },
+          { "id": "sel2UQidx5aB2urAj", "name": "Internacional", "color": "cyanLight2" },
+          { "id": "selz3lUTnYMC1kKO3", "name": "Recaudación", "color": "tealLight2" },
+          { "id": "selFjnCFLoqFAJT0C", "name": "Interno del club", "color": "greenLight2" },
+          { "id": "selrimteNMPuK2bKj", "name": "Tecnológico", "color": "blueLight2" },
+          { "id": "selkPanW7JeU3SAkz", "name": "Social", "color": "cyanLight2" },
+          { "id": "sel8wtSRf0zratlOZ", "name": "Innovación", "color": "tealLight2" },
+          { "id": "selzIAKghOQitPgGe", "name": "Operativo", "color": "greenLight2" },
+          { "id": "selGjGo39w5yQ6Xch", "name": "Estratégico", "color": "yellowLight2" },
+          { "id": "seluznquAW9StDanf", "name": "Calidad", "color": "orangeLight2" },
+          { "id": "selht4hjbjEfLMsPu", "name": "Sostenibilidad", "color": "redLight2" }
+        ] } },
+        { "id": "fldLfuF7gzyFkX8yd", "name": "Estado", "type": "singleSelect", "options": { "choices": [
+          { "id": "sel5HXXk8SVmHXNej", "name": "Planeación", "color": "blueLight2" },
+          { "id": "selYN7wTupNdo0k9z", "name": "En curso", "color": "cyanLight2" },
+          { "id": "selpg3rrhsqeLrhJo", "name": "Cerrado", "color": "tealLight2" },
+          { "id": "sel0fwd2Qr4v5EwFA", "name": "Cancelado", "color": "greenLight2" },
+          { "id": "selKUgAOSIajkFiB3", "name": "En progreso", "color": "blueLight2" },
+          { "id": "seltHXB0dN99fPSAw", "name": "Finalizado", "color": "cyanLight2" },
+          { "id": "selpjdnf26IvJkjIe", "name": "Planificado", "color": "tealLight2" }
+        ] } },
+        { "id": "fldFKR3n5wugcea3f", "name": "Área de enfoque", "type": "singleSelect", "options": { "choices": [
+          { "id": "selhsNxOLzFxtS0W7", "name": "Paz", "color": "blueLight2" },
+          { "id": "selTfp65L5RazcBdF", "name": "Prevención de enfermedades", "color": "cyanLight2" },
+          { "id": "selmx2C7ZIVgyvaEQ", "name": "Agua y saneamiento", "color": "tealLight2" },
+          { "id": "selpTCTRmmJ6ZR5Gz", "name": "Salud materno-infantil", "color": "greenLight2" },
+          { "id": "selDKFTwaZkMA5TnA", "name": "Educación", "color": "yellowLight2" },
+          { "id": "selnnosVywXHEhHTA", "name": "Desarrollo económico", "color": "orangeLight2" },
+          { "id": "selougGGE6InN2tAI", "name": "Medio ambiente", "color": "redLight2" },
+          { "id": "selx9wTdJl14G5tTd", "name": "Transformación digital", "color": "blueLight2" },
+          { "id": "selseInZifwuNxzDc", "name": "Sostenibilidad", "color": "cyanLight2" },
+          { "id": "selur3eMoUY0AX4LZ", "name": "Desarrollo de productos", "color": "tealLight2" },
+          { "id": "sel1s14DBFCWBZneZ", "name": "Logística", "color": "greenLight2" },
+          { "id": "sel9pWdVG68Apn6bJ", "name": "Infraestructura", "color": "yellowLight2" },
+          { "id": "selnMwXQutE1qh51b", "name": "Recursos Humanos", "color": "orangeLight2" },
+          { "id": "seleO5GAc3lfm3Ox9", "name": "Expansión de mercado", "color": "redLight2" },
+          { "id": "sellscNDtrqKn6TnE", "name": "Automatización", "color": "pinkLight2" },
+          { "id": "selrF0gZpi7AOi46O", "name": "Gestión de calidad", "color": "purpleLight2" },
+          { "id": "selDnOf2jmuEhpgzh", "name": "Producción", "color": "grayLight2" },
+          { "id": "selIIDHQnO04niIGd", "name": "Relaciones institucionales", "color": "blueLight2" },
+          { "id": "selI1d8ONiGHuV1Y2", "name": "Energía", "color": "cyanLight2" }
+        ] } },
+        { "id": "fldl2aDH2FCJTZq1b", "name": "Líder", "type": "multipleRecordLinks", "options": { "linkedTableId": "tbl1spwjqXSSPTNEa", "isReversed": false, "prefersSingleRecordLink": true, "inverseLinkFieldId": "fldhv3E277xGamzCZ" } },
+        { "id": "fldX6VGKXWwoEEN20", "name": "Fecha inicio", "type": "date" },
+        { "id": "fldz3SnHPkH59iHXt", "name": "Fecha cierre", "type": "date" },
+        { "id": "fldWAbbZbBgEmSkiL", "name": "Presupuesto aprobado", "type": "currency" },
+        { "id": "fldUVOj6U1JSuDSfn", "name": "Fecha de aprobación", "type": "date" },
+        { "id": "fldcG9sxwUYeo3bEI", "name": "Descripción", "type": "multilineText" },
+        { "id": "flduOp6F48VYMFv7I", "name": "EVENTOS", "type": "multipleRecordLinks", "options": { "linkedTableId": "tblmWZ9I5xhB6rJTL", "isReversed": false, "prefersSingleRecordLink": false, "inverseLinkFieldId": "fldldSjurE3uXyZO6" } }
+      ]
+    },
+    {
+      "id": "tblmWZ9I5xhB6rJTL",
+      "name": "EVENTOS",
+      "primaryFieldId": "fld1aqVuW5sQZONJj",
+      "description": "Gestiona eventos del club vinculados a proyectos y responsables.",
+      "fields": [
+        { "id": "fld1aqVuW5sQZONJj", "name": "Evento", "type": "singleLineText" },
+        { "id": "fld4tn5QujrvGFBrP", "name": "Fecha", "type": "date" },
+        { "id": "fldncRuCYvCtGhJAY", "name": "Lugar", "type": "singleLineText" },
+        { "id": "fldldSjurE3uXyZO6", "name": "Proyecto", "type": "multipleRecordLinks", "options": { "linkedTableId": "tblTX2KO85hNG3Vuj", "isReversed": false, "prefersSingleRecordLink": true, "inverseLinkFieldId": "flduOp6F48VYMFv7I" } },
+        { "id": "fld9ZwznrjVhrTCH4", "name": "Meta de recaudación", "type": "currency" },
+        { "id": "fldQcI2LhBEobFR9M", "name": "Responsables", "type": "multipleRecordLinks", "options": { "linkedTableId": "tbl1spwjqXSSPTNEa", "isReversed": false, "prefersSingleRecordLink": false, "inverseLinkFieldId": "fldTdezgtuMttUpjk" } },
+        { "id": "fld52XvKcmVlgFzZ1", "name": "Estado", "type": "singleSelect", "options": { "choices": [
+          { "id": "selpnjalgfKPeUnOa", "name": "Planeado", "color": "blueLight2" },
+          { "id": "selnGJmVTwVQWrAiJ", "name": "Completado", "color": "blueLight2" },
+          { "id": "selAxtpBuQ4nSWkcm", "name": "En progreso", "color": "cyanLight2" },
+          { "id": "selv0m9SQJBGnuMxL", "name": "Planificado", "color": "tealLight2" }
+        ] } }
+      ]
+    }
+  ]
+}
