@@ -1,14 +1,12 @@
 @import 'tailwindcss';
 
-/*
- * Sistema de color del Club Interact.
- * Semilla: azul Interact #00529B y dorado Rotary #F7A81B.
- * La escala de grises es propia (fría, apoyada en el azul) para que los
- * neutros no peleen con la marca.
- * La paleta completa se termina en la etapa 5 con ui-ux-pro-max.
- */
+/* ═══════════════════════════════════════════════════════════════════
+   CAPA 1 — PRIMITIVAS
+   Las rampas de color. Idénticas en ambos temas. Ningún componente las
+   usa directamente: para eso está la capa 2.
+   ═══════════════════════════════════════════════════════════════════ */
 @theme {
-  /* Marca */
+  /* Azul Interact */
   --color-interact-50: #eaf3fb;
   --color-interact-100: #cfe3f5;
   --color-interact-200: #9fc6eb;
@@ -20,6 +18,7 @@
   --color-interact-800: #04335e;
   --color-interact-900: #052642;
 
+  /* Dorado Rotary */
   --color-dorado-50: #fef6e7;
   --color-dorado-100: #fce9c2;
   --color-dorado-200: #fad48a;
@@ -31,7 +30,7 @@
   --color-dorado-800: #5c3a0b;
   --color-dorado-900: #3a250a;
 
-  /* Neutros fríos */
+  /* Neutros fríos, apoyados en el azul de marca */
   --color-tinta-50: #f6f8fa;
   --color-tinta-100: #eceff3;
   --color-tinta-200: #dbe1e8;
@@ -44,24 +43,246 @@
   --color-tinta-900: #1a212c;
   --color-tinta-950: #0e131a;
 
-  /* Semánticos de estado */
-  --color-ok-500: #12805c;
-  --color-ok-100: #d5f0e5;
-  --color-alerta-500: #b45309;
-  --color-alerta-100: #fdedd3;
-  --color-riesgo-500: #b42318;
-  --color-riesgo-100: #fde4e2;
-
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* ═══════════════════════════════════════════════════════════════
+     CAPA 2 — SEMÁNTICAS (valores del tema claro)
+     Lo ÚNICO que los componentes tienen permitido usar. Un componente
+     que diga bg-tinta-50 en vez de bg-superficie se ve bien en claro y
+     roto en oscuro. Se revisa con npm run verify:tokens.
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* Superficies */
+  --color-fondo: #f6f8fa;
+  --color-superficie: #ffffff;
+  --color-superficie-2: #eceff3;
+  --color-superficie-3: #dbe1e8;
+
+  /* Bordes. `borde` y `borde-fuerte` son decorativos: separan visualmente
+     y no necesitan 3:1. `borde-control` delimita campos y botones, donde
+     el borde ES la única señal de dónde empieza el control, y ahí WCAG
+     1.4.11 sí exige 3:1. */
+  --color-borde: #dbe1e8;
+  --color-borde-fuerte: #bcc6d2;
+  --color-borde-control: #6f8095;
+
+  /* Texto */
+  --color-texto: #1a212c;
+  --color-texto-suave: #4b596d;
+  --color-texto-tenue: #64748b;
+  --color-texto-invertido: #ffffff;
+
+  /* Acento de marca */
+  --color-acento: #00529b;
+  --color-acento-hover: #01427c;
+  --color-acento-suave: #eaf3fb;
+  --color-acento-borde: #9fc6eb;
+
+  /* Estados: cada uno con fondo, borde y texto propios */
+  --color-ok-fondo: #dcf5e9;
+  --color-ok-borde: #86d5b4;
+  --color-ok-texto: #0a6647;
+
+  --color-alerta-fondo: #fdefd6;
+  --color-alerta-borde: #f0be6c;
+  --color-alerta-texto: #8a4708;
+
+  --color-riesgo-fondo: #fde5e3;
+  --color-riesgo-borde: #f3a9a3;
+  --color-riesgo-texto: #96201a;
+
+  /* Matriz de cuotas. Exonerado es neutro a propósito: no es un logro
+     ni una falta, es una excepción administrativa. */
+  --color-pagado-fondo: #dcf5e9;
+  --color-pagado-texto: #0a6647;
+  --color-parcial-fondo: #fdefd6;
+  --color-parcial-texto: #8a4708;
+  --color-pendiente-fondo: #fde5e3;
+  --color-pendiente-texto: #96201a;
+  --color-exonerado-fondo: #eceff3;
+  --color-exonerado-texto: #4b596d;
+
+  /* Series de las gráficas */
+  --color-serie-ingreso: #0a6647;
+  --color-serie-egreso: #96201a;
+
+  /* Categorías de la dona. Se distinguen por tono, no solo por
+     luminosidad, para que sirvan en escala de grises con etiqueta. */
+  --color-cat-1: #00529b;
+  --color-cat-2: #b06f08;
+  --color-cat-3: #0a6647;
+  --color-cat-4: #6d3f9e;
+  --color-cat-5: #96201a;
+  --color-cat-6: #56657a;
+  --color-cat-7: #0f6f7a;
+  --color-cat-8: #3a83cd;
+
+  /* Anillo de foco */
+  --color-anillo: #1665b5;
 }
 
-html,
+/* ═══════════════════════════════════════════════════════════════════
+   TEMA OSCURO
+   Tres estados: el sistema decide por defecto, y el interruptor manual
+   gana en ambos sentidos.
+
+   Los colores de estado NO se reutilizan entre temas. El mismo rojo que
+   funciona sobre blanco queda chillón sobre negro: en oscuro el fondo
+   se apaga y el texto se aclara.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --color-fondo: #0e131a;
+    --color-superficie: #1a212c;
+    --color-superficie-2: #2c3644;
+    --color-superficie-3: #435063;
+
+    --color-borde: #2c3644;
+    --color-borde-fuerte: #435063;
+    --color-borde-control: #94a2b3;
+
+    --color-texto: #eceff3;
+    --color-texto-suave: #bcc6d2;
+    --color-texto-tenue: #94a2b3;
+    --color-texto-invertido: #0e131a;
+
+    --color-acento: #6aa5de;
+    --color-acento-hover: #9fc6eb;
+    --color-acento-suave: #04335e;
+    --color-acento-borde: #1665b5;
+
+    --color-ok-fondo: #0b2f22;
+    --color-ok-borde: #157a56;
+    --color-ok-texto: #7fe0b8;
+
+    --color-alerta-fondo: #35240c;
+    --color-alerta-borde: #96650d;
+    --color-alerta-texto: #fbcf6b;
+
+    --color-riesgo-fondo: #3a1613;
+    --color-riesgo-borde: #93332b;
+    --color-riesgo-texto: #f8a9a2;
+
+    --color-pagado-fondo: #0b2f22;
+    --color-pagado-texto: #7fe0b8;
+    --color-parcial-fondo: #35240c;
+    --color-parcial-texto: #fbcf6b;
+    --color-pendiente-fondo: #3a1613;
+    --color-pendiente-texto: #f8a9a2;
+    --color-exonerado-fondo: #2c3644;
+    --color-exonerado-texto: #bcc6d2;
+
+    --color-serie-ingreso: #4ecb9a;
+    --color-serie-egreso: #f08b83;
+
+    --color-cat-1: #6aa5de;
+    --color-cat-2: #f9bd4f;
+    --color-cat-3: #4ecb9a;
+    --color-cat-4: #c39ae4;
+    --color-cat-5: #f08b83;
+    --color-cat-6: #bcc6d2;
+    --color-cat-7: #5fc9d6;
+    --color-cat-8: #9fc6eb;
+
+    --color-anillo: #6aa5de;
+  }
+}
+
+:root[data-tema='oscuro'] {
+  --color-fondo: #0e131a;
+  --color-superficie: #1a212c;
+  --color-superficie-2: #2c3644;
+  --color-superficie-3: #435063;
+
+  --color-borde: #2c3644;
+  --color-borde-fuerte: #435063;
+  --color-borde-control: #94a2b3;
+
+  --color-texto: #eceff3;
+  --color-texto-suave: #bcc6d2;
+  --color-texto-tenue: #94a2b3;
+  --color-texto-invertido: #0e131a;
+
+  --color-acento: #6aa5de;
+  --color-acento-hover: #9fc6eb;
+  --color-acento-suave: #04335e;
+  --color-acento-borde: #1665b5;
+
+  --color-ok-fondo: #0b2f22;
+  --color-ok-borde: #157a56;
+  --color-ok-texto: #7fe0b8;
+
+  --color-alerta-fondo: #35240c;
+  --color-alerta-borde: #96650d;
+  --color-alerta-texto: #fbcf6b;
+
+  --color-riesgo-fondo: #3a1613;
+  --color-riesgo-borde: #93332b;
+  --color-riesgo-texto: #f8a9a2;
+
+  --color-pagado-fondo: #0b2f22;
+  --color-pagado-texto: #7fe0b8;
+  --color-parcial-fondo: #35240c;
+  --color-parcial-texto: #fbcf6b;
+  --color-pendiente-fondo: #3a1613;
+  --color-pendiente-texto: #f8a9a2;
+  --color-exonerado-fondo: #2c3644;
+  --color-exonerado-texto: #bcc6d2;
+
+  --color-serie-ingreso: #4ecb9a;
+  --color-serie-egreso: #f08b83;
+
+  --color-cat-1: #6aa5de;
+  --color-cat-2: #f9bd4f;
+  --color-cat-3: #4ecb9a;
+  --color-cat-4: #c39ae4;
+  --color-cat-5: #f08b83;
+  --color-cat-6: #bcc6d2;
+  --color-cat-7: #5fc9d6;
+  --color-cat-8: #9fc6eb;
+
+  --color-anillo: #6aa5de;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════════ */
+
+html {
+  background-color: var(--color-fondo);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-tema='claro']) {
+    color-scheme: dark;
+  }
+}
+
+html[data-tema='oscuro'] {
+  color-scheme: dark;
+}
+
 body {
-  background-color: var(--color-tinta-50);
-  color: var(--color-tinta-900);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
 }
 
-/* Los montos y las tablas se leen mucho mejor con cifras de ancho fijo. */
+/* Los montos alineados en columna se comparan de un vistazo solo si las
+   cifras tienen el mismo ancho. */
 .tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* El brief pide animaciones sutiles. Para quien pidió menos movimiento,
+   ninguna. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

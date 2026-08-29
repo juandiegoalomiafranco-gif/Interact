@@ -11,7 +11,10 @@
     "schema": "tsx scripts/generate-schema.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify:bundle": "node scripts/verificar-secretos.mjs"
+    "verify:bundle": "node scripts/verificar-secretos.mjs",
+    "verify:tokens": "node scripts/verificar-tokens.mjs",
+    "verify:contraste": "node scripts/verificar-contraste.mjs",
+    "verify": "npm run typecheck && npm run lint && npm test && npm run verify:tokens && npm run verify:contraste"
   },
   "dependencies": {
     "framer-motion": "13.1.1",

@@ -42,14 +42,14 @@ export default async function LoginPage({
   const aviso = error ? (MENSAJES[error] ?? GENERICO) : null;
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-tinta-50 px-6 py-12">
+    <main className="flex min-h-dvh items-center justify-center bg-fondo px-6 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8">
-          <p className="text-xs font-semibold tracking-[0.14em] text-interact-600 uppercase">
+          <p className="text-xs font-semibold tracking-[0.14em] text-acento uppercase">
             Club Interact
           </p>
-          <h1 className="mt-2 text-2xl font-semibold text-tinta-900">Finanzas</h1>
-          <p className="mt-2 text-sm text-tinta-600">
+          <h1 className="mt-2 text-2xl font-semibold text-texto">Finanzas</h1>
+          <p className="mt-2 text-sm text-texto-suave">
             Panel del comité. Entra con el correo que registró el club.
           </p>
         </div>
@@ -57,10 +57,10 @@ export default async function LoginPage({
         {aviso && (
           <div
             role="alert"
-            className="mb-6 rounded-lg border border-riesgo-500/25 bg-riesgo-100 p-4"
+            className="mb-6 rounded-lg border border-riesgo-borde bg-riesgo-fondo p-4"
           >
-            <p className="text-sm font-semibold text-riesgo-500">{aviso.titulo}</p>
-            <p className="mt-1 text-sm text-tinta-700">{aviso.detalle}</p>
+            <p className="text-sm font-semibold text-riesgo-texto">{aviso.titulo}</p>
+            <p className="mt-1 text-sm text-texto-suave">{aviso.detalle}</p>
           </div>
         )}
 
@@ -72,7 +72,7 @@ export default async function LoginPage({
         >
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-3 rounded-lg border border-tinta-200 bg-white px-4 py-3 text-sm font-medium text-tinta-900 shadow-sm transition hover:bg-tinta-50 focus-visible:ring-2 focus-visible:ring-interact-600 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="flex w-full items-center justify-center gap-3 rounded-lg cursor-pointer border border-borde-control bg-superficie px-4 py-3 text-sm font-medium text-texto shadow-sm transition-colors duration-200 hover:bg-superficie-2 focus-visible:ring-2 focus-visible:ring-anillo focus-visible:ring-offset-2 focus-visible:ring-offset-fondo focus-visible:outline-none"
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5">
               <path
@@ -96,7 +96,7 @@ export default async function LoginPage({
           </button>
         </form>
 
-        <p className="mt-6 text-xs leading-relaxed text-tinta-500">
+        <p className="mt-6 text-xs leading-relaxed text-texto-tenue">
           El acceso está restringido a una lista de correos. Este panel maneja datos de
           miembros menores de edad y no es público.
         </p>

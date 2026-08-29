@@ -35,6 +35,9 @@ al navegador. Ver `.env.example` para la lista completa y cómo obtener cada una
 | `npm test` | Tests de `lib/metrics.ts` |
 | `npm run schema` | Regenera `types/airtable.ts` desde la Metadata API de Airtable |
 | `npm run verify:bundle` | Busca secretos en el bundle del cliente (correr tras `build`) |
+| `npm run verify:tokens` | Comprueba que ningún componente use primitivas de color |
+| `npm run verify:contraste` | Contraste WCAG AA de la paleta, en los dos temas |
+| `npm run verify` | Corre typecheck, lint, tests, tokens y contraste |
 
 ## Cuota de la API de Airtable
 
@@ -83,3 +86,34 @@ la base. Nunca le des permisos de escritura.
 ## Documentación
 
 - `docs/esquema.json` — esquema de la base, referencia del mapa de campos
+
+## Sistema de diseño
+
+### Los componentes nunca usan primitivas de color
+
+Hay dos capas de tokens en `app/globals.css`:
+
+- **Primitivas** — las rampas `interact-*`, `dorado-*`, `tinta-*`. Iguales en ambos temas.
+- **Semánticas** — `fondo`, `superficie`, `borde`, `texto`, `acento`, los estados. Estas
+  cambian entre claro y oscuro.
+
+Un componente que escriba `bg-tinta-50` se ve bien en claro y roto en oscuro, porque las
+primitivas no cambian con el tema. `npm run verify:tokens` lo detecta.
+
+### El tema tiene tres estados
+
+El sistema decide por defecto; el interruptor manual fuerza claro u oscuro y gana en ambos
+sentidos. Un script inline en `<head>` estampa `data-tema` antes del primer pintado, si no
+quien usa el tema oscuro ve un destello blanco en cada carga.
+
+### La matriz de cuotas no depende del color
+
+Tres de los cuatro estados empiezan con P, así que la inicial sola no alcanza:
+
+| Estado | Marca |
+|---|---|
+| Pagado | `P` |
+| Parcial | `½` |
+| Pendiente | `D` (de *debe*) |
+| Exonerado | `E` |
+| Sin registro | celda vacía |
