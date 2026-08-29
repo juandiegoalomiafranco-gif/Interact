@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+
+/*
+ * Sistema de color del Club Interact.
+ * Semilla: azul Interact #00529B y dorado Rotary #F7A81B.
+ * La escala de grises es propia (fría, apoyada en el azul) para que los
+ * neutros no peleen con la marca.
+ * La paleta completa se termina en la etapa 5 con ui-ux-pro-max.
+ */
+@theme {
+  /* Marca */
+  --color-interact-50: #eaf3fb;
+  --color-interact-100: #cfe3f5;
+  --color-interact-200: #9fc6eb;
+  --color-interact-300: #6aa5de;
+  --color-interact-400: #3a83cd;
+  --color-interact-500: #1665b5;
+  --color-interact-600: #00529b;
+  --color-interact-700: #01427c;
+  --color-interact-800: #04335e;
+  --color-interact-900: #052642;
+
+  --color-dorado-50: #fef6e7;
+  --color-dorado-100: #fce9c2;
+  --color-dorado-200: #fad48a;
+  --color-dorado-300: #f9bd4f;
+  --color-dorado-400: #f7a81b;
+  --color-dorado-500: #dc8e0c;
+  --color-dorado-600: #b06f08;
+  --color-dorado-700: #85530a;
+  --color-dorado-800: #5c3a0b;
+  --color-dorado-900: #3a250a;
+
+  /* Neutros fríos */
+  --color-tinta-50: #f6f8fa;
+  --color-tinta-100: #eceff3;
+  --color-tinta-200: #dbe1e8;
+  --color-tinta-300: #bcc6d2;
+  --color-tinta-400: #94a2b3;
+  --color-tinta-500: #6f8095;
+  --color-tinta-600: #56657a;
+  --color-tinta-700: #435063;
+  --color-tinta-800: #2c3644;
+  --color-tinta-900: #1a212c;
+  --color-tinta-950: #0e131a;
+
+  /* Semánticos de estado */
+  --color-ok-500: #12805c;
+  --color-ok-100: #d5f0e5;
+  --color-alerta-500: #b45309;
+  --color-alerta-100: #fdedd3;
+  --color-riesgo-500: #b42318;
+  --color-riesgo-100: #fde4e2;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body {
+  background-color: var(--color-tinta-50);
+  color: var(--color-tinta-900);
+}
+
+/* Los montos y las tablas se leen mucho mejor con cifras de ancho fijo. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
