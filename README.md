@@ -1,7 +1,8 @@
 # Dashboard financiero · Club Interact
 
-Panel interno y **de solo lectura** para el comité de finanzas y la junta directiva.
-La fuente de verdad es Airtable; este proyecto nunca le escribe.
+Panel interno para el comité de finanzas y la junta directiva del club. Muestra el estado
+de la plata y permite registrar movimientos, pagos de cuota y donaciones sin salir de él.
+La fuente de verdad es Airtable.
 
 ## Stack
 
@@ -37,6 +38,7 @@ al navegador. Ver `.env.example` para la lista completa y cómo obtener cada una
 | `npm run verify:bundle` | Busca secretos en el bundle del cliente (correr tras `build`) |
 | `npm run verify:tokens` | Comprueba que ningún componente use primitivas de color |
 | `npm run verify:contraste` | Contraste WCAG AA de la paleta, en los dos temas |
+| `npm run verify:escritura` | Guardián de la capa de escritura: sin DELETE, sin llamadas sueltas |
 | `npm run verify` | Corre typecheck, lint, tests, tokens y contraste |
 
 ## Cuota de la API de Airtable
@@ -117,3 +119,30 @@ Tres de los cuatro estados empiezan con P, así que la inicial sola no alcanza:
 | Pendiente | `D` (de *debe*) |
 | Exonerado | `E` |
 | Sin registro | celda vacía |
+
+## Escritura hacia Airtable
+
+El panel escribe, pero de forma acotada. Tres reglas, cada una con tests:
+
+**Solo tres tablas.** `MOVIMIENTOS`, `CUOTAS` y `DONACIONES`. `MIEMBROS` lleva datos de
+contacto de menores y de sus acudientes; `PERIODOS`, `PROYECTOS` y `EVENTOS` registran actos
+de gobierno del club que se deciden en reunión, no capturando un formulario.
+
+**Nunca borra.** Solo `POST` y `PATCH`. `DELETE` no existe en el tipo `MetodoEscritura`, y no
+es una omisión que alguien deba completar: corregir un error contable es un asiento nuevo o
+un `PATCH`, igual que en contabilidad de papel, donde tampoco se arranca una hoja.
+
+**Dos listas.** `ALLOWED_EMAILS` decide quién ve; `EDITOR_EMAILS` decide quién registra. Hay
+que estar en las dos, y se comprueba en cada escritura, no solo al arrancar.
+
+`npm run verify:escritura` recorre el código buscando un `DELETE`, una llamada a Airtable
+fuera de `lib/airtable/`, o una escritura que no pase por `exigirEscrituraPermitida()`.
+
+### Una etiqueta de caché por tabla
+
+Guardar un movimiento invalida `airtable:movimientos`, no las ocho tablas. Con una etiqueta
+compartida, cada registro costaría ~15 llamadas de relectura; a ~85 registros al mes serían
+~1.275 contra una cuota de 1.000. Por tabla, el mismo trabajo cuesta ~255.
+
+Registrar un pago de cuota o una donación en dinero también invalida `movimientos`, porque
+ambos crean un ingreso y sin eso el saldo quedaría atrasado.
