@@ -34,6 +34,7 @@ al navegador. Ver `.env.example` para la lista completa y cómo obtener cada una
 | `npm run lint` | ESLint |
 | `npm test` | Tests de `lib/metrics.ts` |
 | `npm run schema` | Regenera `types/airtable.ts` desde la Metadata API de Airtable |
+| `npm run verify:bundle` | Busca secretos en el bundle del cliente (correr tras `build`) |
 
 ## Cuota de la API de Airtable
 
@@ -56,6 +57,24 @@ club son menores de edad.
 - Ninguna ruta es pública: todo va detrás de Auth.js con lista blanca de correos
 - Cero analytics y cero scripts de terceros
 - Los campos `Teléfono`, `Acudiente` y `Teléfono acudiente` de MIEMBROS no se leen
+
+### La lista blanca falla cerrado
+
+Si `ALLOWED_EMAILS` está vacía o sin definir, **no entra nadie**. Tratar una lista vacía
+como "sin restricciones" convertiría un despliegue mal configurado en una puerta abierta.
+
+La lista se comprueba dos veces: al iniciar sesión y en cada refresco del token. Por eso
+sacar a alguien de `ALLOWED_EMAILS` le corta el acceso enseguida, en vez de dejarle la
+sesión viva hasta que expire.
+
+### Comprobar que no se filtró nada
+
+```bash
+npm run build && npm run verify:bundle
+```
+
+Busca en `.next/static/` tokens de Airtable, client secrets de Google y nombres de
+variables de servidor. Sale con código 1 si encuentra algo, así que sirve en CI.
 
 Si el token se filtra, con los scopes correctos (`data.records:read` y
 `schema.bases:read`, sobre una sola base) lo peor que puede pasar es que alguien lea
