@@ -47,7 +47,7 @@ export default async function DashboardLayout({
             >
               <button
                 type="submit"
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[--radius-interno] border border-barra-activo px-3 py-2 text-sm font-medium text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-(--radius-interno) border border-barra-activo px-3 py-2 text-sm font-medium text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
               >
                 <IconoSalir className="size-4 shrink-0" />
                 Salir
@@ -76,7 +76,7 @@ export default async function DashboardLayout({
             <button
               type="submit"
               aria-label="Cerrar sesión"
-              className="inline-flex cursor-pointer items-center justify-center rounded-[--radius-interno] border border-barra-activo p-2 text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
+              className="inline-flex cursor-pointer items-center justify-center rounded-(--radius-interno) border border-barra-activo p-2 text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
             >
               <IconoSalir />
             </button>

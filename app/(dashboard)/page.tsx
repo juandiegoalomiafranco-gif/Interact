@@ -50,7 +50,7 @@ export default function GeneralPage() {
         />
       </div>
 
-      <div className="rounded-[--radius-tarjeta] border border-borde bg-superficie p-6">
+      <div className="rounded-(--radius-tarjeta) border border-borde bg-superficie p-6">
         <h2 className="text-sm font-semibold text-texto">Qué falta para llenar esto</h2>
         <ol className="mt-3 space-y-2 text-sm text-texto-suave">
           <li>1. Crear las tablas MOVIMIENTOS, DONANTES y DONACIONES en Airtable.</li>
