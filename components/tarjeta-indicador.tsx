@@ -76,7 +76,7 @@ export function TarjetaIndicador({
   notaVacia = 'Sin datos todavía',
 }: TarjetaIndicadorProps) {
   return (
-    <div className={`rounded-[--radius-tarjeta] p-5 ${TINTES[tinte]}`}>
+    <div className={`rounded-(--radius-tarjeta) p-5 ${TINTES[tinte]}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           {icono && (

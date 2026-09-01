@@ -85,7 +85,7 @@ export function InterruptorDeTema({
       suppressHydrationWarning
       aria-label={`${ETIQUETAS[tema]}. Cambiar a ${ETIQUETAS[siguiente].toLowerCase()}`}
       title={ETIQUETAS[tema]}
-      className={`inline-flex cursor-pointer items-center justify-center rounded-[--radius-interno] p-2 transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none ${
+      className={`inline-flex cursor-pointer items-center justify-center rounded-(--radius-interno) p-2 transition-colors duration-200 focus-visible:ring-2 focus-visible:outline-none ${
         enBarra
           ? 'border border-barra-activo text-barra-texto-tenue hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-barra-acento'
           : 'border border-borde text-texto-suave hover:bg-superficie-2 hover:text-texto focus-visible:ring-anillo focus-visible:ring-offset-2 focus-visible:ring-offset-superficie'
