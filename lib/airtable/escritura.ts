@@ -8,11 +8,12 @@ import { parsearListaBlanca } from '@/lib/allowlist';
  * en el token sino aquí. Este archivo es esa barrera, y es puro a propósito:
  * todo se puede probar sin tocar la API.
  *
- * TRES REGLAS, y ninguna es negociable desde una vista nueva:
+ * CUATRO REGLAS, y ninguna es negociable desde una vista nueva:
  *
- *   1. Solo tres tablas se pueden escribir.
- *   2. Solo POST y PATCH. Nunca DELETE.
- *   3. Solo correos que estén en EDITOR_EMAILS *y* en ALLOWED_EMAILS.
+ *   1. PERIODOS no se escribe nunca.
+ *   2. De cada tabla, solo los campos de su lista blanca.
+ *   3. Solo POST y PATCH. Nunca DELETE.
+ *   4. Solo correos que estén en EDITOR_EMAILS *y* en ALLOWED_EMAILS.
  *
  * Los datos son de un club con menores de edad, y un token con escritura
  * filtrado puede modificar la contabilidad. Estas reglas no detienen a
@@ -23,25 +24,131 @@ import { parsearListaBlanca } from '@/lib/allowlist';
 
 // ────────────────────────── Tablas ──────────────────────────
 
-/** Transaccionales: se registran a diario y por eso se pueden escribir. */
-export const TABLAS_ESCRIBIBLES = ['MOVIMIENTOS', 'CUOTAS', 'DONACIONES'] as const;
+/**
+ * Lo que el panel puede escribir.
+ *
+ * Antes eran tres tablas y las demás estaban cerradas de golpe. El club pidió
+ * poder corregir un proyecto, un evento o el rol de un miembro sin abrir
+ * Airtable, así que la barrera bajó de nivel tabla a nivel campo: ahora la
+ * lista de abajo dice QUÉ tablas, y CAMPOS_ESCRIBIBLES dice qué campos de
+ * cada una. Es más fina, no más floja — los datos de contacto de un menor
+ * siguen siendo inalcanzables desde la web, que era lo que la regla vieja
+ * protegía de verdad.
+ */
+export const TABLAS_ESCRIBIBLES = [
+  'MOVIMIENTOS',
+  'CUOTAS',
+  'DONACIONES',
+  'DONANTES',
+  'PROYECTOS',
+  'EVENTOS',
+  'MIEMBROS',
+] as const;
 export type TablaEscribible = (typeof TABLAS_ESCRIBIBLES)[number];
 
 /**
- * De referencia: la app las lee y nunca las toca.
+ * PERIODOS es la única que queda cerrada, y no por descuido.
  *
- * MIEMBROS lleva datos de contacto de menores y sus acudientes. PERIODOS,
- * PROYECTOS y EVENTOS registran actos de gobierno del club —cerrar un mes,
- * aprobar un presupuesto, programar un evento— que se deciden en reunión, no
- * capturando un formulario.
+ * Un periodo se abre y se cierra en reunión: `Cerrado` es la firma de que un
+ * mes contable quedó sellado. Un formulario web que pueda desmarcarlo
+ * convierte una decisión de junta en un clic, y reabre meses ya cuadrados.
  */
-export const TABLAS_SOLO_LECTURA = ['MIEMBROS', 'PERIODOS', 'PROYECTOS', 'EVENTOS'] as const;
+export const TABLAS_SOLO_LECTURA = ['PERIODOS'] as const;
 export type TablaSoloLectura = (typeof TABLAS_SOLO_LECTURA)[number];
 
 export type Tabla = TablaEscribible | TablaSoloLectura;
 
 export function esEscribible(tabla: string): tabla is TablaEscribible {
   return (TABLAS_ESCRIBIBLES as readonly string[]).includes(tabla);
+}
+
+// ────────────────────────── Campos ──────────────────────────
+
+/**
+ * Qué campos puede tocar el panel, tabla por tabla.
+ *
+ * Los nombres son los de Airtable, con tildes y todo, porque así viajan en el
+ * cuerpo del request.
+ *
+ * MIEMBROS es la razón de que esta lista exista. Buena parte del club son
+ * menores de edad, y `Correo`, `Teléfono`, `Acudiente` y `Teléfono acudiente`
+ * NO están aquí: el panel no los lee (ver `lib/airtable/mapeo.ts`) y tampoco
+ * los puede escribir. Quien necesite cambiarle el teléfono a un miembro entra
+ * a Airtable, donde ese dato está detrás de los permisos de la base y queda
+ * en su historial de revisiones.
+ *
+ * Tampoco están los campos calculados ni los de solo lectura de Airtable
+ * (rollups, fórmulas): mandarlos devuelve 422 y el error no dice cuál fue.
+ */
+export const CAMPOS_ESCRIBIBLES: Record<TablaEscribible, readonly string[]> = {
+  MOVIMIENTOS: [
+    'Concepto',
+    'Fecha',
+    'Tipo',
+    'Monto',
+    'Categoría',
+    'Estado de aprobación',
+    'Conciliado',
+    'Proyecto',
+    'Evento',
+    'Observación',
+  ],
+  CUOTAS: [
+    'Referencia',
+    'Miembro',
+    'Periodo',
+    'Monto esperado',
+    'Monto pagado',
+    'Estado',
+    'Fecha de pago',
+    'Método',
+    'Observación',
+  ],
+  DONACIONES: [
+    'Referencia',
+    'Donante',
+    'Monto',
+    'Estado',
+    'Tipo de aporte',
+    'Fecha de compromiso',
+    'Fecha de recepción',
+    'Proyecto',
+    'Evento',
+    'Observación',
+  ],
+  DONANTES: ['Nombre', 'Tipo', 'Contacto', 'Notas'],
+  PROYECTOS: [
+    'Proyecto',
+    'Tipo',
+    'Estado',
+    'Área de enfoque',
+    'Líder',
+    'Fecha inicio',
+    'Fecha cierre',
+    'Presupuesto aprobado',
+    'Fecha de aprobación',
+    'Descripción',
+  ],
+  EVENTOS: ['Evento', 'Fecha', 'Lugar', 'Proyecto', 'Meta de recaudación', 'Responsables', 'Estado'],
+  // Sin datos de contacto. Ver el comentario de arriba.
+  MIEMBROS: ['Nombre', 'Rol', 'Estado', 'Institución', 'Notas'],
+};
+
+/** Los campos de MIEMBROS que jamás salen ni entran por la web. */
+export const CAMPOS_PROHIBIDOS_MIEMBROS = [
+  'Correo',
+  'Teléfono',
+  'Acudiente',
+  'Teléfono acudiente',
+] as const;
+
+export function esCampoEscribible(tabla: TablaEscribible, campo: string): boolean {
+  return CAMPOS_ESCRIBIBLES[tabla].includes(campo);
+}
+
+/** Los campos de `datos` que la tabla no acepta. Vacío = todo bien. */
+export function camposNoPermitidos(tabla: TablaEscribible, datos: object): string[] {
+  return Object.keys(datos).filter((campo) => !esCampoEscribible(tabla, campo));
 }
 
 // ────────────────────────── Métodos ──────────────────────────
@@ -131,10 +238,12 @@ export function exigirEscrituraPermitida(params: {
   tabla: string;
   metodo: string;
   correo: string | null | undefined;
+  /** Los campos que se van a mandar. Se comprueban contra CAMPOS_ESCRIBIBLES. */
+  datos?: object;
   listaEditores?: string[];
   listaBlanca?: string[];
 }): { tabla: TablaEscribible; metodo: MetodoEscritura; correo: string } {
-  const { tabla, metodo, correo } = params;
+  const { tabla, metodo, correo, datos } = params;
   const listaEditores = params.listaEditores ?? listaEditoresDelEntorno();
   const listaBlanca = params.listaBlanca ?? parsearListaBlanca(process.env.ALLOWED_EMAILS);
 
@@ -150,6 +259,18 @@ export function exigirEscrituraPermitida(params: {
       `El método ${metodo} no está permitido. Solo ${METODOS_PERMITIDOS.join(' y ')}: nada se borra desde el panel.`,
       'metodo-no-permitido',
     );
+  }
+
+  // El campo se comprueba ANTES que el permiso de la persona: mandar el
+  // teléfono de un menor está mal aunque quien lo mande sea el tesorero.
+  if (datos !== undefined) {
+    const sobran = camposNoPermitidos(tabla, datos);
+    if (sobran.length > 0) {
+      throw new EscrituraNoPermitida(
+        `El panel no puede escribir ${sobran.join(', ')} en ${tabla}. Campos permitidos: ${CAMPOS_ESCRIBIBLES[tabla].join(', ')}.`,
+        'campo-no-escribible',
+      );
+    }
   }
 
   const permiso = evaluarEscritura({ correo, listaEditores, listaBlanca });
@@ -183,5 +304,7 @@ export function etiquetasAInvalidar(tabla: TablaEscribible): string[] {
   // invalidar cuotas sin movimientos dejaría el saldo desactualizado.
   if (tabla === 'CUOTAS') return [etiquetaDe('CUOTAS'), etiquetaDe('MOVIMIENTOS')];
   if (tabla === 'DONACIONES') return [etiquetaDe('DONACIONES'), etiquetaDe('MOVIMIENTOS')];
+  // Un donante nuevo se crea casi siempre junto con su primera donación.
+  if (tabla === 'DONANTES') return [etiquetaDe('DONANTES'), etiquetaDe('DONACIONES')];
   return [etiquetaDe(tabla)];
 }

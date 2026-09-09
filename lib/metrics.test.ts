@@ -146,6 +146,7 @@ function snapshot(over: Partial<Snapshot> = {}): Snapshot {
     donantes: [],
     donaciones: [],
     obtenidoEn: '2026-08-29T12:00:00.000Z',
+    faltantes: [],
     ...over,
   };
 }

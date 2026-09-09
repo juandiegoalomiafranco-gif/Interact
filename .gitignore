@@ -28,3 +28,6 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 *.tsbuildinfo
+
+# Caché de desarrollo de Airtable (AIRTABLE_DEV_CACHE=1)
+.cache/

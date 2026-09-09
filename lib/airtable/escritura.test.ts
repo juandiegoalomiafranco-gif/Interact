@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CAMPOS_ESCRIBIBLES,
+  CAMPOS_PROHIBIDOS_MIEMBROS,
   EscrituraNoPermitida,
   METODOS_PERMITIDOS,
   TABLAS_ESCRIBIBLES,
   TABLAS_SOLO_LECTURA,
+  camposNoPermitidos,
+  esCampoEscribible,
   esEscribible,
   esMetodoPermitido,
   etiquetaDe,
@@ -26,18 +30,22 @@ const guarda = (over: Record<string, unknown> = {}) =>
   });
 
 describe('qué tablas se pueden escribir', () => {
-  it('solo las tres transaccionales', () => {
-    expect([...TABLAS_ESCRIBIBLES]).toEqual(['MOVIMIENTOS', 'CUOTAS', 'DONACIONES']);
+  it('todas menos PERIODOS', () => {
+    expect([...TABLAS_ESCRIBIBLES]).toEqual([
+      'MOVIMIENTOS',
+      'CUOTAS',
+      'DONACIONES',
+      'DONANTES',
+      'PROYECTOS',
+      'EVENTOS',
+      'MIEMBROS',
+    ]);
   });
 
-  it('MIEMBROS nunca es escribible', () => {
-    // Lleva datos de contacto de menores y de sus acudientes.
-    expect(esEscribible('MIEMBROS')).toBe(false);
-  });
-
-  it('las tablas de gobierno del club tampoco', () => {
-    // Cerrar un mes o aprobar un presupuesto se decide en reunión, no
-    // capturando un formulario.
+  it('PERIODOS nunca es escribible', () => {
+    // `Cerrado` es la firma de que un mes contable quedó sellado. Un
+    // formulario web que lo desmarque reabre meses ya cuadrados.
+    expect(esEscribible('PERIODOS')).toBe(false);
     for (const t of TABLAS_SOLO_LECTURA) {
       expect(esEscribible(t), t).toBe(false);
     }
@@ -149,14 +157,14 @@ describe('exigirEscrituraPermitida', () => {
 
   it('lanza, no devuelve false', () => {
     // Un booleano se puede ignorar con un `if` olvidado; una excepción no.
-    expect(() => guarda({ tabla: 'MIEMBROS' })).toThrow(EscrituraNoPermitida);
+    expect(() => guarda({ tabla: 'PERIODOS' })).toThrow(EscrituraNoPermitida);
     expect(() => guarda({ correo: 'nadie@gmail.com' })).toThrow(EscrituraNoPermitida);
     expect(() => guarda({ listaEditores: [] })).toThrow(EscrituraNoPermitida);
   });
 
   it('el error dice qué pasó, para poder registrarlo en el servidor', () => {
     try {
-      guarda({ tabla: 'PROYECTOS' });
+      guarda({ tabla: 'PERIODOS' });
       expect.unreachable('debió lanzar');
     } catch (e) {
       expect(e).toBeInstanceOf(EscrituraNoPermitida);
@@ -168,10 +176,75 @@ describe('exigirEscrituraPermitida', () => {
     // Un intento contra una tabla prohibida es un error de programación
     // nuestro, y debe verse como tal aunque el usuario sí sea editor.
     try {
-      guarda({ tabla: 'MIEMBROS', correo: 'nadie@gmail.com' });
+      guarda({ tabla: 'PERIODOS', correo: 'nadie@gmail.com' });
       expect.unreachable('debió lanzar');
     } catch (e) {
       expect((e as EscrituraNoPermitida).motivo).toBe('tabla-no-escribible');
+    }
+  });
+});
+
+describe('qué campos se pueden escribir', () => {
+  it('los datos de contacto de MIEMBROS no están en ninguna lista', () => {
+    // Ésta es la prueba que sostiene la promesa del README. Buena parte del
+    // club son menores de edad: su teléfono y el de su acudiente no salen
+    // ni entran por la web, aunque la tabla sí se pueda editar.
+    for (const campo of CAMPOS_PROHIBIDOS_MIEMBROS) {
+      expect(esCampoEscribible('MIEMBROS', campo), campo).toBe(false);
+    }
+  });
+
+  it('escribir el teléfono de un miembro lanza', () => {
+    try {
+      guarda({ tabla: 'MIEMBROS', datos: { Nombre: 'Ana', 'Teléfono': '3001234567' } });
+      expect.unreachable('debió lanzar');
+    } catch (e) {
+      expect(e).toBeInstanceOf(EscrituraNoPermitida);
+      expect((e as EscrituraNoPermitida).motivo).toBe('campo-no-escribible');
+      // El mensaje nombra el campo, para que el error se pueda arreglar.
+      expect((e as Error).message).toContain('Teléfono');
+    }
+  });
+
+  it('los campos legítimos de un miembro sí pasan', () => {
+    expect(
+      guarda({ tabla: 'MIEMBROS', datos: { Nombre: 'Ana', Rol: 'Tesorero' } }),
+    ).toMatchObject({ tabla: 'MIEMBROS' });
+  });
+
+  it('el campo se comprueba antes que la persona', () => {
+    // Mandar el teléfono de un menor está mal aunque quien lo mande sea
+    // editor: es un error nuestro, no un intento de intrusión.
+    try {
+      guarda({
+        tabla: 'MIEMBROS',
+        datos: { 'Acudiente': 'x' },
+        correo: 'nadie@gmail.com',
+      });
+      expect.unreachable('debió lanzar');
+    } catch (e) {
+      expect((e as EscrituraNoPermitida).motivo).toBe('campo-no-escribible');
+    }
+  });
+
+  it('sin `datos` no comprueba campos, para no romper a quien solo valida permisos', () => {
+    expect(() => guarda({ tabla: 'MOVIMIENTOS' })).not.toThrow();
+  });
+
+  it('camposNoPermitidos nombra todos los que sobran', () => {
+    expect(camposNoPermitidos('MOVIMIENTOS', { Concepto: 'a', Inventado: 1, Otro: 2 })).toEqual([
+      'Inventado',
+      'Otro',
+    ]);
+    expect(camposNoPermitidos('MOVIMIENTOS', { Concepto: 'a', Monto: 1 })).toEqual([]);
+  });
+
+  it('toda tabla escribible tiene su lista de campos, y ninguna vacía', () => {
+    // Una lista faltante sería `undefined` y `.includes` reventaría en
+    // producción; una vacía haría la tabla inescribible sin decirlo.
+    for (const t of TABLAS_ESCRIBIBLES) {
+      expect(CAMPOS_ESCRIBIBLES[t], t).toBeDefined();
+      expect(CAMPOS_ESCRIBIBLES[t].length, t).toBeGreaterThan(0);
     }
   });
 });
