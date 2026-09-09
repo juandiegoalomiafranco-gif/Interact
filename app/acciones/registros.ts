@@ -31,7 +31,8 @@ import {
   TIPOS_APORTE,
   TIPOS_MOVIMIENTO,
 } from '@/types/domain';
-import { aMensaje, exito, guardar, type EstadoAccion } from './comun';
+import { aMensaje, guardar } from './comun';
+import { exito, type EstadoAccion } from './estado';
 
 /**
  * Lo que el panel puede registrar y corregir.

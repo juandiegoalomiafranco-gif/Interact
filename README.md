@@ -36,6 +36,7 @@ al navegador. Ver `.env.example` para la lista completa y cómo obtener cada una
 | `npm test` | Tests de `lib/metrics.ts` |
 | `npm run schema` | Regenera `types/airtable.ts` desde la Metadata API de Airtable |
 | `npm run verify:bundle` | Busca secretos en el bundle del cliente (correr tras `build`) |
+| `npm run crear-tablas` | Crea MOVIMIENTOS, DONANTES y DONACIONES en Airtable (una sola vez) |
 | `npm run verify:tokens` | Comprueba que ningún componente use primitivas de color |
 | `npm run verify:contraste` | Contraste WCAG AA de la paleta, en los dos temas |
 | `npm run verify:escritura` | Guardián de la capa de escritura: sin DELETE, sin llamadas sueltas |
@@ -85,6 +86,41 @@ Si el token se filtra, con los scopes correctos (`data.records:read` y
 `schema.bases:read`, sobre una sola base) lo peor que puede pasar es que alguien lea
 la base. Nunca le des permisos de escritura.
 
+## Las tres tablas que hay que crear una vez
+
+La base nació con cinco tablas: MIEMBROS, PERIODOS, CUOTAS, PROYECTOS y EVENTOS. El panel
+necesita tres más —**MOVIMIENTOS, DONANTES y DONACIONES**— y sin MOVIMIENTOS no hay saldo,
+ni ingresos, ni egresos, ni gráfica de barras.
+
+```bash
+AIRTABLE_SCHEMA_TOKEN=patXXXXXXXX npm run crear-tablas
+```
+
+Ese token es **distinto** del de la app y se usa una sola vez:
+
+1. En <https://airtable.com/create/tokens>, crea uno con `schema.bases:write` y
+   `schema.bases:read`, con acceso solo a la base de finanzas.
+2. Corre el comando. Es idempotente: una tabla que ya exista se salta.
+3. **Vuelve y bórralo.** La app nunca necesita permisos de esquema, y un token que sí los
+   tenga puede borrar tablas enteras si se filtra.
+
+El script regenera `docs/esquema.json` al terminar.
+
+Mientras las tablas no existan el panel no se rompe: las vistas que dependen de ellas
+muestran qué falta, y **nunca un $0**. Un saldo de cero porque el club gastó todo y uno
+porque no hay dónde registrar son cosas distintas.
+
+## Revisar el diseño sin token: `DEMO=1`
+
+```bash
+DEMO=1 npm run dev
+```
+
+Sirve un snapshot de ejemplo determinista en vez de llamar a Airtable, con una franja fija
+que dice **"Datos de ejemplo"** y que no se puede cerrar. Es a propósito: un tablero
+financiero con números inventados que se lean como reales es peor que uno vacío. En
+producción `snapshotDemo()` lanza en vez de servir nada.
+
 ## Documentación
 
 - `docs/esquema.json` — esquema de la base, referencia del mapa de campos
@@ -101,6 +137,14 @@ Hay dos capas de tokens en `app/globals.css`:
 
 Un componente que escriba `bg-tinta-50` se ve bien en claro y roto en oscuro, porque las
 primitivas no cambian con el tema. `npm run verify:tokens` lo detecta.
+
+### Los tokens se emiten con `@theme static`
+
+Sin `static`, Tailwind 4 solo emite los tokens cuyo nombre aparece **escrito literalmente**
+en el código. Los colores de las gráficas se arman con `var(--color-cat-${n})`, así que
+Tailwind los daba por muertos y los borraba del CSS. El resultado no era un error: era una
+dona negra, y solo en el tema claro. `npm run verify:tokens` falla si alguien quita el
+`static`.
 
 ### El tema tiene tres estados
 
@@ -124,9 +168,15 @@ Tres de los cuatro estados empiezan con P, así que la inicial sola no alcanza:
 
 El panel escribe, pero de forma acotada. Tres reglas, cada una con tests:
 
-**Solo tres tablas.** `MOVIMIENTOS`, `CUOTAS` y `DONACIONES`. `MIEMBROS` lleva datos de
-contacto de menores y de sus acudientes; `PERIODOS`, `PROYECTOS` y `EVENTOS` registran actos
-de gobierno del club que se deciden en reunión, no capturando un formulario.
+**Una tabla cerrada, y campos permitidos en las demás.** La barrera está a nivel de campo,
+no de tabla: `CAMPOS_ESCRIBIBLES` dice exactamente qué se puede tocar de cada una. De
+`MIEMBROS` se pueden corregir nombre, rol, estado, institución y notas — y **nada más**:
+`Correo`, `Teléfono`, `Acudiente` y `Teléfono acudiente` no están en la lista, no se leen
+(`lib/airtable/mapeo.ts`) y `npm run verify:escritura` falla si alguien los nombra siquiera
+en una vista. Buena parte del club son menores de edad.
+
+`PERIODOS` es la única tabla cerrada del todo: `Cerrado` es la firma de que un mes contable
+quedó sellado, y un formulario web que lo desmarque reabre meses ya cuadrados.
 
 **Nunca borra.** Solo `POST` y `PATCH`. `DELETE` no existe en el tipo `MetodoEscritura`, y no
 es una omisión que alguien deba completar: corregir un error contable es un asiento nuevo o
@@ -135,8 +185,15 @@ un `PATCH`, igual que en contabilidad de papel, donde tampoco se arranca una hoj
 **Dos listas.** `ALLOWED_EMAILS` decide quién ve; `EDITOR_EMAILS` decide quién registra. Hay
 que estar en las dos, y se comprueba en cada escritura, no solo al arrancar.
 
+**Dos escrituras cuando entra plata.** Registrar un pago de cuota marca la cuota *y* crea el
+movimiento de ingreso; una donación en dinero ya recibida, igual. El saldo sale solo de
+MOVIMIENTOS, así que sin el asiento no cuadraría la caja. Airtable no tiene transacciones:
+si la segunda escritura falla, el panel lo dice con todas sus letras en vez de reportar que
+todo salió bien.
+
 `npm run verify:escritura` recorre el código buscando un `DELETE`, una llamada a Airtable
-fuera de `lib/airtable/`, o una escritura que no pase por `exigirEscrituraPermitida()`.
+fuera de `lib/airtable/`, una escritura que no pase por `exigirEscrituraPermitida()`, o una
+vista que mencione los datos de contacto de un miembro.
 
 ### Una etiqueta de caché por tabla
 

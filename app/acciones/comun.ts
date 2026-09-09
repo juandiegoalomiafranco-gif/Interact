@@ -10,7 +10,7 @@ import {
   type TablaEscribible,
 } from '@/lib/airtable/escritura';
 import { parsearListaBlanca } from '@/lib/allowlist';
-import type { ErroresFormulario } from '@/lib/validacion';
+import { fallo, type EstadoAccion } from './estado';
 
 /**
  * Lo que comparten todas las Server Actions del panel.
@@ -18,21 +18,13 @@ import type { ErroresFormulario } from '@/lib/validacion';
  * Una acción hace siempre lo mismo, en este orden: mirar quién es, validar lo
  * que llegó, escribir, y refrescar el caché de las tablas afectadas. Tenerlo
  * en un solo sitio evita que la sexta acción se salte el tercer paso.
+ *
+ * SOLO SERVIDOR. Importa `next/cache`, `@/auth` y el cliente de Airtable, así
+ * que un componente `'use client'` no puede importar de aquí: se llevaría
+ * todo eso al navegador. Para eso está `estado.ts`, que es solo tipos.
  */
 
-export type EstadoAccion =
-  | { estado: 'inicial' }
-  | { estado: 'ok'; mensaje: string }
-  | { estado: 'error'; errores: ErroresFormulario };
-
-export const INICIAL: EstadoAccion = { estado: 'inicial' };
-
-export const fallo = (campos: Record<string, string>, general?: string): EstadoAccion => ({
-  estado: 'error',
-  errores: general ? { campos, general } : { campos },
-});
-
-export const exito = (mensaje: string): EstadoAccion => ({ estado: 'ok', mensaje });
+export { exito, fallo, INICIAL, type EstadoAccion } from './estado';
 
 // ─────────────────────────── Quién está pidiendo ───────────────────────────
 

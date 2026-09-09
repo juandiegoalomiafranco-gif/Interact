@@ -1,10 +1,20 @@
 import { auth, signOut } from '@/auth';
+import { BarraSuperior } from '@/components/barra-superior';
+import { FranjaDemo } from '@/components/aviso-lectura';
 import { IconoSalir } from '@/components/iconos';
 import { NavInferior, NavLateral } from '@/components/navegacion';
-import { InterruptorDeTema } from '@/components/tema';
+import { datos } from '@/lib/datos';
+import { construirIndice } from '@/lib/indice-busqueda';
+import { alertas } from '@/lib/metrics';
 
 /**
- * Shell del panel: barra lateral fija en escritorio, barra inferior en móvil.
+ * Shell del panel: barra lateral fija en escritorio, barra inferior en móvil,
+ * y arriba el buscador con el estado de la cuenta.
+ *
+ * El layout lee el snapshot igual que las páginas, pero `datos()` está
+ * envuelto en `cache()` de React: las dos lecturas de una misma petición son
+ * una sola llamada a Airtable.
+ *
  * El login vive en (auth) y no pasa por aquí.
  */
 export default async function DashboardLayout({
@@ -14,6 +24,8 @@ export default async function DashboardLayout({
 }) {
   const sesion = await auth();
   const correo = sesion?.user?.email ?? null;
+
+  const { snapshot } = await datos();
 
   return (
     <div className="min-h-dvh md:flex">
@@ -31,42 +43,6 @@ export default async function DashboardLayout({
         </div>
 
         <div className="p-3">
-          {correo && (
-            <p className="mb-2 truncate px-3 text-xs text-barra-texto-tenue" title={correo}>
-              {correo}
-            </p>
-          )}
-          <div className="flex items-center gap-2">
-            <InterruptorDeTema enBarra />
-            <form
-              className="flex-1"
-              action={async () => {
-                'use server';
-                await signOut({ redirectTo: '/login' });
-              }}
-            >
-              <button
-                type="submit"
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-(--radius-interno) border border-barra-activo px-3 py-2 text-sm font-medium text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
-              >
-                <IconoSalir className="size-4 shrink-0" />
-                Salir
-              </button>
-            </form>
-          </div>
-        </div>
-      </aside>
-
-      {/* Encabezado — móvil */}
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-barra px-4 py-3 md:hidden">
-        <div>
-          <p className="text-[10px] font-semibold tracking-[0.14em] text-barra-acento uppercase">
-            Club Interact
-          </p>
-          <p className="text-sm font-semibold text-barra-texto">Finanzas</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <InterruptorDeTema enBarra />
           <form
             action={async () => {
               'use server';
@@ -75,18 +51,51 @@ export default async function DashboardLayout({
           >
             <button
               type="submit"
-              aria-label="Cerrar sesión"
-              className="inline-flex cursor-pointer items-center justify-center rounded-(--radius-interno) border border-barra-activo p-2 text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-(--radius-interno) border border-barra-activo px-3 py-2 text-sm font-medium text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
             >
-              <IconoSalir />
+              <IconoSalir className="size-4 shrink-0" />
+              Salir
             </button>
           </form>
         </div>
+      </aside>
+
+      {/* Encabezado — móvil. La marca vive aquí porque en móvil no hay
+          barra lateral que la sostenga. */}
+      <header className="sticky top-0 z-30 flex items-center justify-between bg-barra px-4 py-3 md:hidden">
+        <div>
+          <p className="text-[10px] font-semibold tracking-[0.14em] text-barra-acento uppercase">
+            Club Interact
+          </p>
+          <p className="text-sm font-semibold text-barra-texto">Finanzas</p>
+        </div>
+        <form
+          action={async () => {
+            'use server';
+            await signOut({ redirectTo: '/login' });
+          }}
+        >
+          <button
+            type="submit"
+            aria-label="Cerrar sesión"
+            className="inline-flex cursor-pointer items-center justify-center rounded-(--radius-interno) border border-barra-activo p-2 text-barra-texto-tenue transition-colors duration-200 hover:bg-barra-activo hover:text-barra-texto focus-visible:ring-2 focus-visible:ring-barra-acento focus-visible:outline-none"
+          >
+            <IconoSalir />
+          </button>
+        </form>
       </header>
 
       {/* pb-20 en móvil deja aire para que la barra inferior no tape el
           último dato de la página. */}
-      <main className="min-w-0 flex-1 px-4 pt-5 pb-20 md:px-8 md:py-8">{children}</main>
+      <main className="min-w-0 flex-1 px-4 pt-3 pb-20 md:px-8 md:pt-4 md:pb-8">
+        <BarraSuperior
+          correo={correo}
+          indice={construirIndice(snapshot)}
+          alertas={alertas(snapshot).length}
+        />
+        <FranjaDemo visible={snapshot.esDemo === true} />
+        {children}
+      </main>
 
       <NavInferior />
     </div>
