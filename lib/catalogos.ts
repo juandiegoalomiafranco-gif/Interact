@@ -77,3 +77,15 @@ export const ROLES_MIEMBRO = [
   'Estudiante',
   'Monitor',
 ] as const;
+
+/**
+ * Qué categorías tienen sentido según el movimiento sea gasto o ingreso.
+ *
+ * Enseñar las diez siempre es ruido: nadie clasifica un gasto como "Cuotas"
+ * ni un ingreso como "Papelería", y una lista larga hace que la gente elija
+ * "Otros" por no leerla — con lo que la dona de categorías deja de servir.
+ */
+export const CATEGORIAS_POR_TIPO: Record<'Ingreso' | 'Egreso', readonly string[]> = {
+  Ingreso: ['Cuotas', 'Donaciones', 'Recaudación', 'Otros'],
+  Egreso: ['Proyectos', 'Eventos', 'Refrigerios', 'Transporte', 'Papelería', 'Bancos', 'Otros'],
+};

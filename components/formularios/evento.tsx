@@ -5,10 +5,10 @@ import { INICIAL } from '@/app/acciones/estado';
 import { guardarEvento } from '@/app/acciones/registros';
 import { ESTADOS_EVENTO } from '@/lib/catalogos';
 import type { Evento, Proyecto } from '@/types/domain';
-import { AvisoError, BotonGuardar, Campo, CampoMonto, Seleccion } from '../campos';
+import { AvisoError, BotonGuardar, Confirmacion, Campo, CampoMonto, Seleccion } from '../campos';
 import { Dialogo } from '../dialogo';
 import { IconoEditar, IconoMas } from '../iconos';
-import { erroresDe, generalDe, useCerrarAlGuardar } from './comun';
+import { erroresDe, generalDe, valoresDe } from './comun';
 
 function Campos({
   cerrar,
@@ -20,9 +20,16 @@ function Campos({
   evento?: Evento;
 }) {
   const [estado, accion] = useActionState(guardarEvento, INICIAL);
-  useCerrarAlGuardar(estado, cerrar);
-
   const e = erroresDe(estado);
+  // React 19 resetea el formulario al terminar la acción, también cuando
+  // termina mal: sin re-sembrar, un error borra todo lo ya escrito.
+  const v = valoresDe(estado);
+
+  // Confirmación visible en vez de cerrar en silencio: sin ella no hay
+  // forma de saber si el cambio llegó a Airtable.
+  if (estado.estado === 'ok') {
+    return <Confirmacion mensaje={estado.mensaje} onListo={cerrar} />;
+  }
 
   return (
     <form action={accion} className="space-y-4">
@@ -35,7 +42,7 @@ function Campos({
         requerido
         error={e.nombre}
         marcador="Bazar de agosto"
-        valorInicial={evento?.nombre}
+        valorInicial={v.nombre ?? evento?.nombre}
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -44,7 +51,7 @@ function Campos({
           etiqueta="Fecha"
           tipo="date"
           error={e.fecha}
-          valorInicial={evento?.fecha}
+          valorInicial={v.fecha ?? evento?.fecha}
         />
         <Seleccion
           nombre="estado"
@@ -52,17 +59,18 @@ function Campos({
           requerido
           error={e.estado}
           opciones={ESTADOS_EVENTO}
-          valorInicial={evento?.estado ?? 'Planeado'}
+          valorInicial={v.estado ?? evento?.estado ?? 'Planeado'}
         />
       </div>
 
-      <Campo nombre="lugar" etiqueta="Lugar" error={e.lugar} marcador="Salón múltiple" />
+      <Campo nombre="lugar"
+        valorInicial={v.lugar} etiqueta="Lugar" error={e.lugar} marcador="Salón múltiple" />
 
       <CampoMonto
         nombre="meta"
         etiqueta="Meta de recaudación"
         error={e.meta}
-        valorInicial={evento?.metaRecaudacion}
+        valorInicial={v.meta ?? evento?.metaRecaudacion}
         ayuda="Con qué se compara lo recaudado. Sin meta, el evento solo reporta su neto."
       />
 

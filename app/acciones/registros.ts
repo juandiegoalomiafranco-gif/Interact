@@ -78,7 +78,7 @@ export async function registrarMovimiento(
   const nota = r.campo('observacion', textoOpcional(form.get('observacion')));
   const movimientoId = r.campo('id', idOpcional(form.get('id'), 'el movimiento'));
 
-  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario() };
+  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario(form) };
 
   try {
     await guardar({
@@ -101,7 +101,7 @@ export async function registrarMovimiento(
 
     return exito(movimientoId ? 'Movimiento actualizado.' : 'Movimiento registrado.');
   } catch (e) {
-    return aMensaje(e);
+    return aMensaje(e, form);
   }
 }
 
@@ -140,7 +140,7 @@ export async function registrarPagoCuota(
     r.errores.montoPagado = 'Para marcar Pagado o Parcial hace falta el monto pagado.';
   }
 
-  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario() };
+  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario(form) };
 
   const nombreMiembro = (form.get('nombreMiembro') as string | null)?.trim() || 'Miembro';
   const nombrePeriodo = (form.get('nombrePeriodo') as string | null)?.trim() || 'Periodo';
@@ -162,7 +162,7 @@ export async function registrarPagoCuota(
       }),
     });
   } catch (e) {
-    return aMensaje(e);
+    return aMensaje(e, form);
   }
 
   // Sin plata que entre no hay asiento que crear: un Exonerado o un Pendiente
@@ -213,7 +213,7 @@ export async function guardarDonante(
   const notas = r.campo('notas', textoOpcional(form.get('notas')));
   const donanteId = r.campo('id', idOpcional(form.get('id'), 'el donante'));
 
-  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario() };
+  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario(form) };
 
   try {
     await guardar({
@@ -230,7 +230,7 @@ export async function guardarDonante(
 
     return exito(donanteId ? 'Donante actualizado.' : 'Donante agregado.');
   } catch (e) {
-    return aMensaje(e);
+    return aMensaje(e, form);
   }
 }
 
@@ -263,7 +263,7 @@ export async function registrarDonacion(
     r.errores.fechaRecepcion = 'Una donación recibida necesita su fecha de recepción.';
   }
 
-  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario() };
+  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario(form) };
 
   const nombreDonante = (form.get('nombreDonante') as string | null)?.trim() || 'Donante';
 
@@ -286,7 +286,7 @@ export async function registrarDonacion(
       }),
     });
   } catch (e) {
-    return aMensaje(e);
+    return aMensaje(e, form);
   }
 
   const entraPlata = estado === 'Recibida' && aporte === 'Dinero' && !donacionId;
@@ -349,7 +349,7 @@ export async function guardarProyecto(
     r.errores.fechaCierre = 'La fecha de cierre no puede ser anterior a la de inicio.';
   }
 
-  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario() };
+  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario(form) };
 
   try {
     await guardar({
@@ -371,7 +371,7 @@ export async function guardarProyecto(
 
     return exito(proyectoId ? 'Proyecto actualizado.' : 'Proyecto creado.');
   } catch (e) {
-    return aMensaje(e);
+    return aMensaje(e, form);
   }
 }
 
@@ -391,7 +391,7 @@ export async function guardarEvento(
   const proyectoId = r.campo('proyectoId', idOpcional(form.get('proyectoId'), 'el proyecto'));
   const eventoId = r.campo('id', idOpcional(form.get('id'), 'el evento'));
 
-  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario() };
+  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario(form) };
 
   try {
     await guardar({
@@ -410,7 +410,7 @@ export async function guardarEvento(
 
     return exito(eventoId ? 'Evento actualizado.' : 'Evento creado.');
   } catch (e) {
-    return aMensaje(e);
+    return aMensaje(e, form);
   }
 }
 
@@ -439,7 +439,7 @@ export async function guardarMiembro(
   const notas = r.campo('notas', textoOpcional(form.get('notas')));
   const miembroId = r.campo('id', idOpcional(form.get('id'), 'el miembro'));
 
-  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario() };
+  if (r.hayErrores) return { estado: 'error', errores: r.aFormulario(form) };
 
   try {
     await guardar({
@@ -457,6 +457,6 @@ export async function guardarMiembro(
 
     return exito(miembroId ? 'Miembro actualizado.' : 'Miembro agregado.');
   } catch (e) {
-    return aMensaje(e);
+    return aMensaje(e, form);
   }
 }

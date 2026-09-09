@@ -19,15 +19,18 @@ export function Dialogo({
   iconoBoton,
   variante = 'primario',
   abiertoInicial = false,
+  ariaBoton,
 }: {
   etiquetaBoton: ReactNode;
   titulo: string;
   descripcion?: string;
-  /** Recibe `cerrar` para que el formulario se cierre solo al guardar bien. */
+  /** Recibe `cerrar` para que el formulario decida cuándo cerrarse. */
   children: (cerrar: () => void) => ReactNode;
   iconoBoton?: ReactNode;
-  variante?: 'primario' | 'secundario' | 'discreto';
+  variante?: 'primario' | 'secundario' | 'discreto' | 'flotante';
   abiertoInicial?: boolean;
+  /** Para el botón flotante, cuyo texto se esconde en pantallas angostas. */
+  ariaBoton?: string;
 }) {
   const dialogo = useRef<HTMLDialogElement>(null);
   const [abierto, setAbierto] = useState(abiertoInicial);
@@ -47,6 +50,15 @@ export function Dialogo({
     secundario:
       'bg-superficie text-texto border border-borde-control hover:bg-superficie-2',
     discreto: 'bg-transparent text-texto-suave border border-transparent hover:bg-superficie-2',
+    /**
+     * El botón flotante de registrar.
+     *
+     * `bottom-20` en móvil y no `bottom-4`: la barra de navegación inferior
+     * mide catorce unidades más el área segura del teléfono, y un botón
+     * debajo de ella queda medio tapado justo en la mano que lo va a usar.
+     */
+    flotante:
+      'fixed right-4 bottom-20 z-30 shadow-(--sombra-flotante) bg-acento text-texto-invertido hover:bg-acento-hover border border-transparent md:right-6 md:bottom-6',
   };
 
   return (
@@ -54,7 +66,10 @@ export function Dialogo({
       <button
         type="button"
         onClick={() => setAbierto(true)}
-        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3.5 py-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-anillo focus-visible:outline-none ${estilos[variante]}`}
+        aria-label={ariaBoton}
+        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-anillo focus-visible:outline-none ${
+          variante === 'flotante' ? 'px-4 py-3.5' : 'px-3.5 py-2'
+        } ${estilos[variante]}`}
       >
         {iconoBoton}
         {etiquetaBoton}

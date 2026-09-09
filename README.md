@@ -164,6 +164,29 @@ Tres de los cuatro estados empiezan con P, así que la inicial sola no alcanza:
 | Exonerado | `E` |
 | Sin registro | celda vacía |
 
+## Registrar un gasto
+
+El formulario está ordenado por lo que la persona ya sabe cuando lo abre: está mirando un
+recibo. Primero **cuánto**, después **en qué**, después la categoría en fichas de un toque.
+La fecha viene en hoy —que es cierto casi siempre— y proyecto, evento y estado de aprobación
+viven plegados en *Más opciones*.
+
+Tres detalles que se notan al usarlo:
+
+- **El botón de registrar flota en todas las vistas**, por encima de la barra inferior en
+  móvil. El tesorero anota en mitad de un evento; obligarlo a navegar hasta General primero
+  es lo que hace que el gasto se anote "después" y termine sin anotarse.
+- **Al guardar sale una confirmación con "Registrar otro"**, no un modal que se cierra solo.
+  Cerrar en silencio no deja ver si el registro llegó a Airtable, y esa duda hace que la
+  gente anote lo mismo dos veces.
+- **Un error no borra lo escrito.** React 19 resetea el formulario cuando la acción termina,
+  también cuando termina mal, así que las acciones devuelven los valores enviados y el
+  formulario los vuelve a pintar.
+
+Si no se puede registrar —falta la tabla MOVIMIENTOS, falta `EDITOR_EMAILS`, o tu correo no
+está en ella— el panel lo dice **arriba y antes** de que llenes nada, nombrando cuál de los
+tres es: cada uno lo arregla una persona distinta.
+
 ## Escritura hacia Airtable
 
 El panel escribe, pero de forma acotada. Tres reglas, cada una con tests:

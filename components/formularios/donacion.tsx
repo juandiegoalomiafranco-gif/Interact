@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { INICIAL } from '@/app/acciones/estado';
 import { guardarDonante, registrarDonacion } from '@/app/acciones/registros';
 import { TIPOS_DONANTE } from '@/lib/catalogos';
@@ -12,10 +12,10 @@ import {
   type Evento,
   type Proyecto,
 } from '@/types/domain';
-import { AreaTexto, AvisoError, BotonGuardar, Campo, CampoMonto, Seleccion } from '../campos';
+import { AreaTexto, AvisoError, BotonGuardar, Confirmacion, Campo, CampoMonto, Seleccion } from '../campos';
 import { Dialogo } from '../dialogo';
 import { IconoEditar, IconoMas, IconoRegalo } from '../iconos';
-import { erroresDe, generalDe, hoyISO, useCerrarAlGuardar } from './comun';
+import { erroresDe, generalDe, hoyISO, valoresDe } from './comun';
 
 function CamposDonacion({
   cerrar,
@@ -31,14 +31,31 @@ function CamposDonacion({
   donacion?: Donacion;
 }) {
   const [estado, accion] = useActionState(registrarDonacion, INICIAL);
-  useCerrarAlGuardar(estado, cerrar);
+  const [ronda, setRonda] = useState(0);
 
   const e = erroresDe(estado);
+  // React 19 resetea el formulario al terminar la acción, también cuando
+  // termina mal: sin re-sembrar, un error borra todo lo ya escrito.
+  const v = valoresDe(estado);
+
+  // Antes el modal se cerraba y ya: no había forma de saber si había
+  // llegado a Airtable. En un libro contable esa duda hace que la gente
+  // registre lo mismo dos veces "por si acaso".
+  if (estado.estado === 'ok') {
+    return (
+      <Confirmacion
+        mensaje={estado.mensaje}
+        textoOtro="Registrar otra"
+        onOtro={() => setRonda((n) => n + 1)}
+        onListo={cerrar}
+      />
+    );
+  }
   const nombrePorId = new Map(donantes.map((d) => [d.id, d.nombre]));
   const donanteActual = donacion?.donanteIds[0];
 
   return (
-    <form action={accion} className="space-y-4">
+    <form key={ronda} action={accion} className="space-y-4">
       <AvisoError mensaje={generalDe(estado)} />
       {donacion && <input type="hidden" name="id" value={donacion.id} />}
       <input
@@ -63,7 +80,7 @@ function CamposDonacion({
           etiqueta="Monto"
           requerido
           error={e.monto}
-          valorInicial={donacion?.monto}
+          valorInicial={v.monto ?? donacion?.monto}
           ayuda="En especie o servicio: lo que vale, para poder reportarlo."
         />
         <Seleccion
@@ -72,7 +89,7 @@ function CamposDonacion({
           requerido
           error={e.tipoAporte}
           opciones={TIPOS_APORTE}
-          valorInicial={donacion?.tipoAporte ?? 'Dinero'}
+          valorInicial={v.tipoAporte ?? donacion?.tipoAporte ?? 'Dinero'}
         />
       </div>
 
@@ -82,7 +99,7 @@ function CamposDonacion({
         requerido
         error={e.estado}
         opciones={ESTADOS_DONACION}
-        valorInicial={donacion?.estado ?? 'Comprometida'}
+        valorInicial={v.estado ?? donacion?.estado ?? 'Comprometida'}
         ayuda="Una promesa no es plata: solo lo Recibido entra al saldo."
       />
 
@@ -93,14 +110,14 @@ function CamposDonacion({
           tipo="date"
           requerido
           error={e.fechaCompromiso}
-          valorInicial={donacion?.fechaCompromiso ?? hoyISO()}
+          valorInicial={v.fechaCompromiso ?? donacion?.fechaCompromiso ?? hoyISO()}
         />
         <Campo
           nombre="fechaRecepcion"
           etiqueta="Fecha de recepción"
           tipo="date"
           error={e.fechaRecepcion}
-          valorInicial={donacion?.fechaRecepcion}
+          valorInicial={v.fechaRecepcion ?? donacion?.fechaRecepcion}
           ayuda="Obligatoria si el estado es Recibida."
         />
       </div>
@@ -124,7 +141,8 @@ function CamposDonacion({
         />
       </div>
 
-      <AreaTexto nombre="observacion" etiqueta="Observación" error={e.observacion} filas={2} />
+      <AreaTexto nombre="observacion"
+        valorInicial={v.observacion} etiqueta="Observación" error={e.observacion} filas={2} />
 
       <p className="rounded-(--radius-interno) bg-acento-suave px-3 py-2 text-xs text-acento">
         Una donación en dinero ya Recibida crea sola su ingreso en Movimientos. Las
@@ -170,9 +188,15 @@ export function BotonNuevaDonacion({
 
 function CamposDonante({ cerrar, donante }: { cerrar: () => void; donante?: Donante }) {
   const [estado, accion] = useActionState(guardarDonante, INICIAL);
-  useCerrarAlGuardar(estado, cerrar);
 
   const e = erroresDe(estado);
+  // React 19 resetea el formulario al terminar la acción, también cuando
+  // termina mal: sin re-sembrar, un error borra todo lo ya escrito.
+  const v = valoresDe(estado);
+
+  if (estado.estado === 'ok') {
+    return <Confirmacion mensaje={estado.mensaje} onListo={cerrar} />;
+  }
 
   return (
     <form action={accion} className="space-y-4">
@@ -185,23 +209,25 @@ function CamposDonante({ cerrar, donante }: { cerrar: () => void; donante?: Dona
         requerido
         error={e.nombre}
         marcador="Ferretería La Esquina"
-        valorInicial={donante?.nombre}
+        valorInicial={v.nombre ?? donante?.nombre}
       />
       <Seleccion
         nombre="tipo"
         etiqueta="Tipo"
         error={e.tipo}
         opciones={TIPOS_DONANTE}
-        valorInicial={donante?.tipo}
+        valorInicial={v.tipo ?? donante?.tipo}
         vacio="Sin especificar"
       />
       <Campo
         nombre="contacto"
+        valorInicial={v.contacto}
         etiqueta="Contacto"
         error={e.contacto}
         ayuda="Cómo agradecerle. Opcional."
       />
-      <AreaTexto nombre="notas" etiqueta="Notas" error={e.notas} filas={2} />
+      <AreaTexto nombre="notas"
+        valorInicial={v.notas} etiqueta="Notas" error={e.notas} filas={2} />
 
       <div className="flex justify-end pt-1">
         <BotonGuardar>{donante ? 'Guardar cambios' : 'Agregar donante'}</BotonGuardar>

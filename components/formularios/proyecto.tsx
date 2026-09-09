@@ -5,10 +5,10 @@ import { INICIAL } from '@/app/acciones/estado';
 import { guardarProyecto } from '@/app/acciones/registros';
 import { AREAS_DE_ENFOQUE, ESTADOS_PROYECTO, TIPOS_PROYECTO } from '@/lib/catalogos';
 import type { Miembro, Proyecto } from '@/types/domain';
-import { AreaTexto, AvisoError, BotonGuardar, Campo, CampoMonto, Seleccion } from '../campos';
+import { AreaTexto, AvisoError, BotonGuardar, Confirmacion, Campo, CampoMonto, Seleccion } from '../campos';
 import { Dialogo } from '../dialogo';
 import { IconoEditar, IconoMas } from '../iconos';
-import { erroresDe, generalDe, useCerrarAlGuardar } from './comun';
+import { erroresDe, generalDe, valoresDe } from './comun';
 
 function Campos({
   cerrar,
@@ -20,9 +20,16 @@ function Campos({
   proyecto?: Proyecto;
 }) {
   const [estado, accion] = useActionState(guardarProyecto, INICIAL);
-  useCerrarAlGuardar(estado, cerrar);
-
   const e = erroresDe(estado);
+  // React 19 resetea el formulario al terminar la acción, también cuando
+  // termina mal: sin re-sembrar, un error borra todo lo ya escrito.
+  const v = valoresDe(estado);
+
+  // Confirmación visible en vez de cerrar en silencio: sin ella no hay
+  // forma de saber si el cambio llegó a Airtable.
+  if (estado.estado === 'ok') {
+    return <Confirmacion mensaje={estado.mensaje} onListo={cerrar} />;
+  }
 
   return (
     <form action={accion} className="space-y-4">
@@ -35,7 +42,7 @@ function Campos({
         requerido
         error={e.nombre}
         marcador="Biblioteca comunitaria"
-        valorInicial={proyecto?.nombre}
+        valorInicial={v.nombre ?? proyecto?.nombre}
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -45,10 +52,11 @@ function Campos({
           requerido
           error={e.estado}
           opciones={ESTADOS_PROYECTO}
-          valorInicial={proyecto?.estado ?? 'Planeación'}
+          valorInicial={v.estado ?? proyecto?.estado ?? 'Planeación'}
         />
         <Seleccion
           nombre="tipo"
+        valorInicial={v.tipo}
           etiqueta="Tipo"
           error={e.tipo}
           opciones={TIPOS_PROYECTO}
@@ -61,7 +69,7 @@ function Campos({
         etiqueta="Área de enfoque"
         error={e.area}
         opciones={AREAS_DE_ENFOQUE}
-        valorInicial={proyecto?.areaDeEnfoque}
+        valorInicial={v.area ?? proyecto?.areaDeEnfoque}
         vacio="Sin especificar"
       />
 
@@ -69,7 +77,7 @@ function Campos({
         nombre="presupuesto"
         etiqueta="Presupuesto aprobado"
         error={e.presupuesto}
-        valorInicial={proyecto?.presupuestoAprobado}
+        valorInicial={v.presupuesto ?? proyecto?.presupuestoAprobado}
         ayuda="Sin presupuesto no hay semáforo: no habría contra qué comparar el gasto."
       />
 
@@ -79,14 +87,14 @@ function Campos({
           etiqueta="Fecha de inicio"
           tipo="date"
           error={e.fechaInicio}
-          valorInicial={proyecto?.fechaInicio}
+          valorInicial={v.fechaInicio ?? proyecto?.fechaInicio}
         />
         <Campo
           nombre="fechaCierre"
           etiqueta="Fecha de cierre"
           tipo="date"
           error={e.fechaCierre}
-          valorInicial={proyecto?.fechaCierre}
+          valorInicial={v.fechaCierre ?? proyecto?.fechaCierre}
         />
       </div>
 
@@ -99,7 +107,8 @@ function Campos({
         vacio="Sin asignar"
       />
 
-      <AreaTexto nombre="descripcion" etiqueta="Descripción" error={e.descripcion} />
+      <AreaTexto nombre="descripcion"
+        valorInicial={v.descripcion} etiqueta="Descripción" error={e.descripcion} />
 
       <div className="flex justify-end pt-1">
         <BotonGuardar>{proyecto ? 'Guardar cambios' : 'Crear proyecto'}</BotonGuardar>

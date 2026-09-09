@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { puedeEditar } from '@/app/acciones/comun';
 import { AvisoLectura } from '@/components/aviso-lectura';
+import { EstadoEscritura } from '@/components/estado-escritura';
 import { TablaFaltante } from '@/components/estado-vacio';
-import { BotonEditarMovimiento, BotonNuevoMovimiento } from '@/components/formularios/movimiento';
+import { BotonEditarMovimiento } from '@/components/formularios/movimiento';
 import { BarrasIngresosEgresos, LeyendaIngresosEgresos } from '@/components/graficas/barras-mes';
 import { DonaCategorias } from '@/components/graficas/dona-categorias';
 import { MedidorCumplimiento } from '@/components/graficas/medidor';
@@ -56,11 +57,14 @@ export default async function GeneralPage() {
             Año rotario {r.anio.etiqueta} · {nombreMes(hoy.mes)} de {hoy.anio}
           </p>
         </div>
-        {editor && <BotonNuevoMovimiento enlazables={enlazables} />}
+        {/* El botón de registrar vive en el flotante del layout, que está en
+            todas las vistas. Tenerlo también aquí eran dos botones idénticos
+            a la vista, y el de arriba desaparece al bajar la página. */}
       </div>
 
       <AvisoLectura mensaje={errorDeLectura} />
       <TablaFaltante tablas={snapshot.faltantes} />
+      <EstadoEscritura snapshot={snapshot} />
 
       {/* ─────────────── Indicadores ─────────────── */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
