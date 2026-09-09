@@ -10,7 +10,8 @@ import {
   type TablaEscribible,
 } from '@/lib/airtable/escritura';
 import { parsearListaBlanca } from '@/lib/allowlist';
-import { fallo, type EstadoAccion } from './estado';
+import { valoresDe } from '@/lib/validacion';
+import type { EstadoAccion } from './estado';
 
 /**
  * Lo que comparten todas las Server Actions del panel.
@@ -89,9 +90,19 @@ export async function guardar(params: {
  * afuera sale un mensaje genérico, porque el texto crudo de Airtable puede
  * traer nombres de campo, ids y rutas internas.
  */
-export function aMensaje(e: unknown): EstadoAccion {
-  if (e instanceof EscrituraNoPermitida) return fallo({}, e.message);
+export function aMensaje(e: unknown, form?: FormData): EstadoAccion {
+  const valores = form ? valoresDe(form) : undefined;
+
+  const con = (mensaje: string): EstadoAccion => ({
+    estado: 'error',
+    errores: { campos: {}, general: mensaje, ...(valores ? { valores } : {}) },
+  });
+
+  // Un fallo al guardar no puede borrar lo que la persona escribió: se
+  // devuelven los valores para volver a pintarlos, porque React 19 resetea
+  // el formulario cuando la acción termina, también cuando termina mal.
+  if (e instanceof EscrituraNoPermitida) return con(e.message);
 
   console.error('[acciones] falló una escritura:', e);
-  return fallo({}, 'No se pudo guardar. Vuelve a intentarlo en un momento.');
+  return con('No se pudo guardar. Vuelve a intentarlo en un momento.');
 }

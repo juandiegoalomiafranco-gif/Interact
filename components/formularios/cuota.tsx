@@ -1,13 +1,13 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { INICIAL } from '@/app/acciones/estado';
 import { registrarPagoCuota } from '@/app/acciones/registros';
 import { METODOS_PAGO } from '@/lib/catalogos';
 import { ESTADOS_CUOTA, type Cuota, type Miembro, type Periodo } from '@/types/domain';
-import { AreaTexto, AvisoError, BotonGuardar, Campo, CampoMonto, Seleccion } from '../campos';
+import { AreaTexto, AvisoError, BotonGuardar, Confirmacion, Campo, CampoMonto, Seleccion } from '../campos';
 import { Dialogo } from '../dialogo';
-import { erroresDe, generalDe, hoyISO, useCerrarAlGuardar } from './comun';
+import { erroresDe, generalDe, hoyISO, valoresDe } from './comun';
 
 /**
  * Registrar el pago de la cuota de un miembro en un periodo.
@@ -28,12 +28,29 @@ export function CamposCuota({
   cuota?: Cuota;
 }) {
   const [estado, accion] = useActionState(registrarPagoCuota, INICIAL);
-  useCerrarAlGuardar(estado, cerrar);
+  const [ronda, setRonda] = useState(0);
 
   const e = erroresDe(estado);
+  // React 19 resetea el formulario al terminar la acción, también cuando
+  // termina mal: sin re-sembrar, un error borra todo lo ya escrito.
+  const v = valoresDe(estado);
+
+  // Antes el modal se cerraba y ya: no había forma de saber si había
+  // llegado a Airtable. En un libro contable esa duda hace que la gente
+  // registre lo mismo dos veces "por si acaso".
+  if (estado.estado === 'ok') {
+    return (
+      <Confirmacion
+        mensaje={estado.mensaje}
+        textoOtro="Registrar otra"
+        onOtro={() => setRonda((n) => n + 1)}
+        onListo={cerrar}
+      />
+    );
+  }
 
   return (
-    <form action={accion} className="space-y-4">
+    <form key={ronda} action={accion} className="space-y-4">
       <AvisoError mensaje={generalDe(estado)} />
 
       {cuota && <input type="hidden" name="cuotaId" value={cuota.id} />}
@@ -53,7 +70,7 @@ export function CamposCuota({
         requerido
         error={e.estado}
         opciones={ESTADOS_CUOTA}
-        valorInicial={cuota?.estado ?? 'Pagado'}
+        valorInicial={v.estado ?? cuota?.estado ?? 'Pagado'}
         ayuda="Exonerado es una excepción administrativa, no una falta."
       />
 
@@ -62,14 +79,14 @@ export function CamposCuota({
           nombre="montoEsperado"
           etiqueta="Monto esperado"
           error={e.montoEsperado}
-          valorInicial={cuota?.montoEsperado}
+          valorInicial={v.montoEsperado ?? cuota?.montoEsperado}
           ayuda="Lo que debía pagar este mes."
         />
         <CampoMonto
           nombre="montoPagado"
           etiqueta="Monto pagado"
           error={e.montoPagado}
-          valorInicial={cuota?.montoPagado}
+          valorInicial={v.montoPagado ?? cuota?.montoPagado}
           ayuda="Lo que entró de verdad."
         />
       </div>
@@ -80,10 +97,11 @@ export function CamposCuota({
           etiqueta="Fecha de pago"
           tipo="date"
           error={e.fechaPago}
-          valorInicial={cuota?.fechaPago ?? hoyISO()}
+          valorInicial={v.fechaPago ?? cuota?.fechaPago ?? hoyISO()}
         />
         <Seleccion
           nombre="metodo"
+        valorInicial={v.metodo}
           etiqueta="Método"
           error={e.metodo}
           opciones={METODOS_PAGO}
@@ -91,7 +109,8 @@ export function CamposCuota({
         />
       </div>
 
-      <AreaTexto nombre="observacion" etiqueta="Observación" error={e.observacion} filas={2} />
+      <AreaTexto nombre="observacion"
+        valorInicial={v.observacion} etiqueta="Observación" error={e.observacion} filas={2} />
 
       <p className="rounded-(--radius-interno) bg-acento-suave px-3 py-2 text-xs text-acento">
         Si marcas Pagado o Parcial, el ingreso se registra solo en Movimientos. No lo

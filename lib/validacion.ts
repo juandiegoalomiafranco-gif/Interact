@@ -20,6 +20,15 @@ export interface ErroresFormulario {
   campos: Record<string, string>;
   /** Un problema que no es de un campo en particular. */
   general?: string;
+  /**
+   * Lo que la persona alcanzó a escribir, para volver a pintarlo.
+   *
+   * Hace falta porque React 19 resetea el formulario cuando la acción
+   * termina, incluso si terminó en error. Sin esto, equivocarse en el monto
+   * borra también el concepto, la categoría y la fecha — y quien está
+   * registrando tres recibos seguidos abandona a la segunda vez que le pasa.
+   */
+  valores?: Record<string, string>;
 }
 
 // ─────────────────────────────── Texto ───────────────────────────────
@@ -182,7 +191,25 @@ export class Recolector {
     return Object.keys(this.errores).length > 0;
   }
 
-  aFormulario(general?: string): ErroresFormulario {
-    return general ? { campos: this.errores, general } : { campos: this.errores };
+  aFormulario(valores?: FormData, general?: string): ErroresFormulario {
+    return {
+      campos: this.errores,
+      ...(general ? { general } : {}),
+      ...(valores ? { valores: valoresDe(valores) } : {}),
+    };
   }
+}
+
+/**
+ * El FormData como objeto plano de strings.
+ *
+ * Solo entradas de texto: un `File` no se puede volver a poner en un input
+ * por seguridad del navegador, así que se descarta en vez de romper el JSON.
+ */
+export function valoresDe(form: FormData): Record<string, string> {
+  const salida: Record<string, string> = {};
+  for (const [clave, valor] of form.entries()) {
+    if (typeof valor === 'string') salida[clave] = valor;
+  }
+  return salida;
 }

@@ -117,7 +117,7 @@ export function CampoMonto({
   ayuda = 'En pesos. Puedes escribirlo con puntos: 25.000',
   requerido,
   valorInicial,
-}: Base & { valorInicial?: number | null }) {
+}: Base & { valorInicial?: string | number | null }) {
   return (
     <Campo
       nombre={nombre}
@@ -262,5 +262,250 @@ export function AvisoError({ mensaje }: { mensaje?: string }) {
     >
       {mensaje}
     </p>
+  );
+}
+
+// ─────────────────── Controles del registro rápido ───────────────────
+
+/**
+ * Interruptor de dos opciones, del ancho de la tarjeta.
+ *
+ * Reemplaza un `<select>` de dos valores. Un desplegable para elegir entre
+ * gasto e ingreso son tres toques —abrir, buscar, elegir— para la decisión
+ * más frecuente del formulario; así es uno solo, y se ve cuál está activo sin
+ * abrir nada.
+ *
+ * Por dentro son radios de verdad, no botones con estado: funcionan con el
+ * teclado y con lector de pantalla sin que haya que programarlo.
+ */
+export function Interruptor({
+  nombre,
+  etiqueta,
+  opciones,
+  valorInicial,
+  onCambio,
+}: {
+  nombre: string;
+  etiqueta: string;
+  opciones: { valor: string; texto: string; icono?: ReactNode }[];
+  valorInicial: string;
+  onCambio?: (valor: string) => void;
+}) {
+  return (
+    <fieldset>
+      <legend className="mb-1.5 text-sm font-medium text-texto">{etiqueta}</legend>
+      <div className="grid grid-cols-2 gap-2 rounded-(--radius-interno) bg-superficie-2 p-1">
+        {opciones.map((o) => (
+          <label
+            key={o.valor}
+            className="relative cursor-pointer text-center"
+          >
+            <input
+              type="radio"
+              name={nombre}
+              value={o.valor}
+              defaultChecked={o.valor === valorInicial}
+              onChange={() => onCambio?.(o.valor)}
+              className="peer sr-only"
+            />
+            <span className="flex items-center justify-center gap-1.5 rounded-[calc(var(--radius-interno)-0.25rem)] px-3 py-2 text-sm font-medium text-texto-suave transition-colors duration-200 peer-checked:bg-superficie peer-checked:text-texto peer-checked:shadow-(--sombra-tarjeta) peer-focus-visible:ring-2 peer-focus-visible:ring-anillo">
+              {o.icono}
+              {o.texto}
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+/**
+ * El campo de monto del registro rápido: grande y lo primero que se toca.
+ *
+ * `autoFocus` porque el monto es el dato que la persona ya tiene en la mano
+ * —está mirando el recibo— y todo lo demás lo puede reconstruir después.
+ */
+export function MontoGrande({
+  nombre,
+  etiqueta,
+  error,
+  valorInicial,
+  onCambio,
+}: {
+  nombre: string;
+  etiqueta: string;
+  error?: string;
+  /** Número del registro guardado, o el texto crudo que se acaba de enviar. */
+  valorInicial?: string | number | null;
+  onCambio?: (valor: string) => void;
+}) {
+  const id = useId();
+
+  return (
+    <div>
+      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-texto">
+        {etiqueta}
+      </label>
+      <div
+        className={`flex items-center gap-1 rounded-(--radius-interno) border bg-superficie px-3 focus-within:ring-2 focus-within:ring-anillo ${borde(error)}`}
+      >
+        <span aria-hidden="true" className="text-2xl font-semibold text-texto-tenue">
+          $
+        </span>
+        <input
+          id={id}
+          name={nombre}
+          type="text"
+          inputMode="numeric"
+          autoFocus
+          autoComplete="off"
+          placeholder="25.000"
+          defaultValue={valorInicial !== null && valorInicial !== undefined ? String(valorInicial) : ''}
+          onChange={(e) => onCambio?.(e.target.value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
+          className="w-full bg-transparent py-2.5 text-2xl font-semibold tabular text-texto placeholder:font-normal placeholder:text-texto-tenue focus-visible:outline-none"
+        />
+      </div>
+      {error ? (
+        <p id={`${id}-error`} className="mt-1 text-xs font-medium text-riesgo-texto">
+          {error}
+        </p>
+      ) : (
+        <p className="mt-1 text-xs text-texto-tenue">En pesos. Los puntos de miles dan igual.</p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Categorías como fichas: se ven todas y se elige con un toque.
+ *
+ * Un desplegable esconde las opciones hasta que lo abres, y con diez
+ * categorías eso obliga a recordarlas. Aquí están a la vista, y la lista se
+ * acorta según sea gasto o ingreso: nadie clasifica un gasto como "Cuotas".
+ */
+export function Fichas({
+  nombre,
+  etiqueta,
+  opciones,
+  valorInicial,
+  ayuda,
+}: {
+  nombre: string;
+  etiqueta: string;
+  opciones: readonly string[];
+  valorInicial?: string | null;
+  ayuda?: string;
+}) {
+  return (
+    <fieldset>
+      <legend className="mb-1.5 text-sm font-medium text-texto">{etiqueta}</legend>
+      <div className="flex flex-wrap gap-1.5">
+        {opciones.map((o) => (
+          <label key={o} className="cursor-pointer">
+            <input
+              type="radio"
+              name={nombre}
+              value={o}
+              defaultChecked={o === valorInicial}
+              className="peer sr-only"
+            />
+            <span className="inline-block rounded-full border border-borde-control px-3 py-1.5 text-sm text-texto-suave transition-colors duration-200 peer-checked:border-acento peer-checked:bg-acento-suave peer-checked:font-medium peer-checked:text-acento peer-focus-visible:ring-2 peer-focus-visible:ring-anillo">
+              {o}
+            </span>
+          </label>
+        ))}
+      </div>
+      {ayuda && <p className="mt-1.5 text-xs text-texto-tenue">{ayuda}</p>}
+    </fieldset>
+  );
+}
+
+/**
+ * Lo que casi nunca hay que tocar, plegado.
+ *
+ * `<details>` del navegador y no un acordeón a mano: recuerda su estado al
+ * abrirlo, funciona con teclado, y el buscador del navegador (Ctrl+F)
+ * encuentra lo de adentro aunque esté cerrado.
+ */
+export function MasOpciones({ children }: { children: ReactNode }) {
+  return (
+    <details className="group rounded-(--radius-interno) border border-borde">
+      <summary className="cursor-pointer list-none px-3 py-2.5 text-sm font-medium text-texto-suave marker:content-[''] hover:text-texto focus-visible:ring-2 focus-visible:ring-anillo focus-visible:outline-none">
+        <span className="inline-block transition-transform duration-200 group-open:rotate-90">
+          ›
+        </span>{' '}
+        Más opciones
+        <span className="ml-1 font-normal text-texto-tenue">
+          — proyecto, evento, aprobación
+        </span>
+      </summary>
+      <div className="space-y-4 border-t border-borde px-3 py-4">{children}</div>
+    </details>
+  );
+}
+
+/**
+ * La confirmación que sale al guardar.
+ *
+ * Antes el modal se cerraba y ya: no había forma de saber si el movimiento
+ * había llegado a Airtable o si se había perdido. En un libro contable esa
+ * duda hace que la gente registre el mismo gasto dos veces "por si acaso".
+ *
+ * "Registrar otro" está de primero a propósito: quien abre esto suele venir
+ * con tres recibos en la mano, no con uno.
+ */
+export function Confirmacion({
+  mensaje,
+  detalle,
+  onOtro,
+  onListo,
+  textoOtro = 'Registrar otro',
+}: {
+  mensaje: string;
+  detalle?: string;
+  /** Solo donde se registra en tanda. Un proyecto se crea de a uno. */
+  onOtro?: () => void;
+  onListo: () => void;
+  textoOtro?: string;
+}) {
+  return (
+    <div role="status" className="space-y-4 py-2 text-center">
+      <div className="mx-auto grid size-12 place-items-center rounded-full bg-ok-fondo text-ok-texto">
+        <svg viewBox="0 0 24 24" className="size-6" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m5 13 4 4L19 7" />
+        </svg>
+      </div>
+
+      <div>
+        <p className="text-base font-semibold text-texto">{mensaje}</p>
+        {detalle && <p className="mt-0.5 text-sm text-texto-suave">{detalle}</p>}
+        <p className="mt-1 text-xs text-texto-tenue">Ya quedó guardado en Airtable.</p>
+      </div>
+
+      <div className="flex justify-center gap-2">
+        {onOtro && (
+          <button
+            type="button"
+            onClick={onOtro}
+            className="cursor-pointer rounded-full bg-acento px-4 py-2 text-sm font-medium text-texto-invertido transition-colors duration-200 hover:bg-acento-hover focus-visible:ring-2 focus-visible:ring-anillo focus-visible:outline-none"
+          >
+            {textoOtro}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onListo}
+          className={`cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-anillo focus-visible:outline-none ${
+            onOtro
+              ? 'border border-borde-control text-texto hover:bg-superficie-2'
+              : 'bg-acento text-texto-invertido hover:bg-acento-hover'
+          }`}
+        >
+          Listo
+        </button>
+      </div>
+    </div>
   );
 }

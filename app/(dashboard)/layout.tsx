@@ -1,5 +1,6 @@
 import { auth, signOut } from '@/auth';
 import { BarraSuperior } from '@/components/barra-superior';
+import { BotonFlotanteRegistrar } from '@/components/boton-flotante';
 import { FranjaDemo } from '@/components/aviso-lectura';
 import { IconoSalir } from '@/components/iconos';
 import { NavInferior, NavLateral } from '@/components/navegacion';
@@ -96,6 +97,9 @@ export default async function DashboardLayout({
         <FranjaDemo visible={snapshot.esDemo === true} />
         {children}
       </main>
+
+      {/* Registrar desde cualquier vista, sin volver a General. */}
+      <BotonFlotanteRegistrar snapshot={snapshot} />
 
       <NavInferior />
     </div>
