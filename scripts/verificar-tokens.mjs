@@ -7,7 +7,13 @@
  *    Este chequeo existe porque el error es fácil de cometer y difícil de
  *    ver: solo se nota abriendo el tema que uno no usa mientras desarrolla.
  *
- * 2. Ninguna clase puede referirse a una variable CSS con la forma `[--x]`.
+ * 2. El bloque de tokens tiene que ser `@theme static`, no `@theme`. Sin
+ *    `static`, Tailwind borra del CSS los tokens cuyo nombre no aparezca
+ *    escrito literalmente en el código — y los colores de las gráficas se
+ *    arman con una plantilla. Pasó de verdad: la dona de categorías salió
+ *    negra en el tema claro, sin ningún error en consola.
+ *
+ * 3. Ninguna clase puede referirse a una variable CSS con la forma `[--x]`.
  *    En Tailwind 4 eso compila a `border-radius: --radius-tarjeta`, que no
  *    es CSS válido: el navegador descarta la declaración entera y no avisa.
  *    Pasó de verdad — todas las tarjetas del panel salieron con esquinas
@@ -69,3 +75,4 @@ if (hallazgos.length > 0) process.exit(1);
 
 console.log('✓ Los componentes solo usan tokens semánticos');
 console.log('✓ Ninguna clase usa la forma [--variable]');
+console.log('✓ Los tokens se emiten completos (@theme static)');

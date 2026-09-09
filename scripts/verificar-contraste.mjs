@@ -30,7 +30,7 @@ function tokens(inicio) {
   return mapa;
 }
 
-const claro = tokens('@theme {');
+const claro = tokens('@theme static {');
 const oscuro = { ...claro, ...tokens(":root[data-tema='oscuro']") };
 
 const canal = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);

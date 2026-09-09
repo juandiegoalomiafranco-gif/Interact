@@ -5,7 +5,26 @@
    Las rampas de color. Idénticas en ambos temas. Ningún componente las
    usa directamente: para eso está la capa 2.
    ═══════════════════════════════════════════════════════════════════ */
-@theme {
+/**
+ * `static` no es opcional aquí, y cuesta caro descubrir por qué.
+ *
+ * Por defecto Tailwind 4 solo emite los tokens que ve usados en el código, y
+ * los "ve" leyendo el texto de los archivos. `bg-superficie` aparece escrito,
+ * así que sobrevive. Pero los colores de las gráficas se arman desde
+ * JavaScript con una plantilla —`var(--color-cat-${i + 1})`— y ese nombre no
+ * está escrito literalmente en ninguna parte, así que Tailwind lo daba por
+ * muerto y lo borraba del CSS.
+ *
+ * El resultado no era un error: era una dona negra. `fill: var(--color-cat-1)`
+ * con la variable sin definir no falla, simplemente cae al negro por defecto
+ * del SVG. Y solo en el tema claro, porque los bloques de oscuro son CSS
+ * plano que Tailwind copia tal cual.
+ *
+ * Con `static` se emiten todos. Son unos cientos de bytes de más a cambio de
+ * que un token nuevo funcione siempre, sin depender de cómo se escriba su
+ * nombre en el código que lo usa.
+ */
+@theme static {
   /* Azul Interact */
   --color-interact-50: #eaf3fb;
   --color-interact-100: #cfe3f5;
@@ -147,6 +166,22 @@
 
   /* Anillo de foco */
   --color-anillo: #1665b5;
+
+
+  /* ═══════════════════════════════════════════════════════════════
+     ELEVACIÓN
+     La referencia no usa bordes duros entre tarjeta y lienzo: usa una
+     sombra bajísima que separa sin dibujar una línea. Sobre el lienzo
+     cálido, un borde gris se ve sucio; la sombra no.
+     ═══════════════════════════════════════════════════════════════ */
+  --sombra-tarjeta: 0 1px 2px rgb(35 33 29 / 0.04), 0 8px 24px -12px rgb(35 33 29 / 0.10);
+  --sombra-flotante: 0 12px 32px -8px rgb(35 33 29 / 0.22);
+
+  /* Alto de las gráficas. Recharts necesita un número, no un porcentaje:
+     dentro de un contenedor sin alto, ResponsiveContainer colapsa a 0 y la
+     gráfica desaparece sin dar ningún error. */
+  --alto-grafica: 17rem;
+  --alto-grafica-chica: 12rem;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -169,7 +204,6 @@
     --color-barra-texto: #f3f1ec;
     --color-barra-texto-tenue: #a7a299;
     --color-barra-activo: #383223;
-  --color-barra-acento: #f9bd4f;
     --color-barra-acento: #f9bd4f;
 
     --color-borde: #322d24;
@@ -229,6 +263,9 @@
     --color-cat-8: #9fc6eb;
 
     --color-anillo: #6aa5de;
+
+    --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.30), 0 8px 24px -12px rgb(0 0 0 / 0.55);
+    --sombra-flotante: 0 12px 32px -8px rgb(0 0 0 / 0.65);
   }
 }
 
@@ -301,6 +338,13 @@
   --color-cat-8: #9fc6eb;
 
   --color-anillo: #6aa5de;
+
+
+  /* Sobre un lienzo casi negro una sombra al 10 % no se ve. En oscuro la
+     separación la hace el propio salto de superficie, más una sombra
+     bastante más profunda. */
+  --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.30), 0 8px 24px -12px rgb(0 0 0 / 0.55);
+  --sombra-flotante: 0 12px 32px -8px rgb(0 0 0 / 0.65);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -344,4 +388,36 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* La tarjeta del panel. Una clase y no un componente porque la usan tanto
+   los `div` del layout como los `article` de las listas. */
+.tarjeta {
+  background-color: var(--color-superficie);
+  border-radius: var(--radius-tarjeta);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+/* Un scroll horizontal dentro de su propia caja. La tabla de cuotas tiene
+   trece columnas y en un celular no cabe; lo que NO puede pasar es que el
+   `body` entero se corra en horizontal. */
+.scroll-x {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+/**
+ * El velo detrás de un modal.
+ *
+ * Va con un color literal y no con `var(--color-velo)`, que es lo que decía
+ * antes. `::backdrop` no hereda las variables de `:root` en todos los
+ * navegadores: donde no las hereda, la declaración queda inválida y el fondo
+ * simplemente no se oscurece. Sin error, sin aviso — el modal se abre encima
+ * de una página a plena luz y parece que flotara suelto.
+ *
+ * Es la tinta de la marca y no negro puro: sobre el lienzo cálido, un negro
+ * plano se ve como un agujero. Sirve igual en los dos temas.
+ */
+dialog::backdrop {
+  background-color: rgb(20 18 14 / 0.55);
 }

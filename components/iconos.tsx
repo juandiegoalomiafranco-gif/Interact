@@ -1,7 +1,7 @@
 /**
  * Íconos en SVG inline.
  *
- * Sin librería de íconos: son seis trazos y el brief pide no agregar
+ * Sin librería de íconos: son trazos sueltos y el brief pide no agregar
  * dependencias pesadas. Nunca emojis — su forma y color dependen del
  * sistema operativo y no se pueden teñir con el token de la marca.
  */
@@ -16,10 +16,29 @@ const trazo = {
   strokeLinejoin: 'round',
 } as const;
 
+/**
+ * La retícula de cuatro paneles: es lo que hay al otro lado del enlace.
+ *
+ * Antes era una línea de latido. Se veía bien suelta, pero al lado de los
+ * demás íconos —todos contornos de objetos— parecía de otra familia, y una
+ * línea de electrocardiograma no dice "resumen" en un panel de plata.
+ */
 export function IconoGeneral({ className = base }: Props) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
-      <path d="M3 13h4l3 7 4-16 3 9h4" />
+      <rect x="3" y="3" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5" />
+      <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" />
+    </svg>
+  );
+}
+
+export function IconoMovimientos({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="M4 7h13M14 4l3 3-3 3" />
+      <path d="M20 17H7M10 20l-3-3 3-3" />
     </svg>
   );
 }
@@ -99,6 +118,86 @@ export function IconoSalir({ className = base }: Props) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+    </svg>
+  );
+}
+
+// ───────────────── Íconos de la interfaz nueva ─────────────────
+
+export function IconoBuscar({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
+  );
+}
+
+export function IconoMas({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+export function IconoCerrar({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="m6 6 12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
+export function IconoEditar({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z" />
+      <path d="m14 6 4 4" />
+    </svg>
+  );
+}
+
+export function IconoAlerta({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="M12 4 2.5 20h19Z" />
+      <path d="M12 10v4M12 17.5v.01" />
+    </svg>
+  );
+}
+
+export function IconoArriba({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="M12 19V5M6 11l6-6 6 6" />
+    </svg>
+  );
+}
+
+export function IconoAbajo({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="M12 5v14M6 13l6 6 6-6" />
+    </svg>
+  );
+}
+
+export function IconoBanco({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <path d="M3 9.5 12 4l9 5.5" />
+      <path d="M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18" />
+    </svg>
+  );
+}
+
+export function IconoRegalo({ className = base }: Props) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...trazo}>
+      <rect x="3" y="9" width="18" height="11" rx="2" />
+      <path d="M3 13h18M12 9v11" />
+      <path d="M12 9S10.5 4 8 4a2 2 0 0 0 0 5ZM12 9s1.5-5 4-5a2 2 0 0 1 0 5Z" />
     </svg>
   );
 }

@@ -139,4 +139,15 @@ export interface Snapshot {
   donaciones: Donacion[];
   /** Timestamp ISO de cuándo se leyó Airtable. Se muestra en la UI. */
   obtenidoEn: string;
+  /**
+   * Tablas que todavía no existen en la base.
+   *
+   * Una tabla ausente llega como lista vacía, igual que una tabla vacía de
+   * verdad, y las dos cosas no significan lo mismo: sin este campo el panel
+   * mostraría un saldo de $0 donde en realidad falta crear MOVIMIENTOS.
+   * Las vistas lo usan para decir qué falta en vez de inventar un cero.
+   */
+  faltantes: string[];
+  /** true cuando los datos son de ejemplo (DEMO=1), no de Airtable. */
+  esDemo?: boolean;
 }
